@@ -1,0 +1,670 @@
+0<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUS Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0A1628;--blue:#0D3B7A;--blue-mid:#1A5CB0;--blue-light:#2E7DD4;--gold:#C8943A;--gold-light:#E8B460;--gold-pale:#F5D98B;--white:#FFFFFF;--cream:#FAF7F0;--off-white:#F8F6F0;--text-dark:#0A1628;--text-mid:#2C3E60;--text-muted:#6B7A95;--border:rgba(200,148,58,0.2);--r:12px;--r-lg:20px;--transition:0.3s cubic-bezier(0.4,0,0.2,1);--danger:#dc3545;--success:#16a34a;--warning:#f59e0b;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);line-height:1.6;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:'Playfair Display',serif;line-height:1.2;}
+
+/* LOGIN */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--blue));padding:2rem;}
+.login-card{background:var(--white);border-radius:var(--r-lg);padding:3rem;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.login-card h1{font-size:1.8rem;color:var(--navy);text-align:center;margin-bottom:0.3rem;}
+.login-card .subtitle{text-align:center;color:var(--text-muted);font-size:14px;margin-bottom:2rem;}
+.login-card .logo{text-align:center;margin-bottom:1.5rem;}
+.login-card .logo span{display:inline-block;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);font-family:'Playfair Display',serif;font-weight:900;font-size:24px;padding:12px 20px;border-radius:12px;}
+
+/* LAYOUT */
+.admin-layout{display:none;min-height:100vh;}
+.admin-layout.active{display:flex;}
+
+/* SIDEBAR */
+.sidebar{width:260px;background:var(--navy);color:var(--white);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column;}
+.sidebar-header{padding:1.5rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sidebar-header h2{font-size:1.1rem;color:var(--white);margin-bottom:2px;}
+.sidebar-header p{font-size:11px;color:var(--gold-light);letter-spacing:1.5px;text-transform:uppercase;}
+.sidebar-nav{flex:1;padding:1rem 0;}
+.sidebar-nav a{display:flex;align-items:center;gap:10px;padding:10px 1.5rem;color:rgba(255,255,255,0.6);text-decoration:none;font-size:13.5px;transition:var(--transition);cursor:pointer;}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--gold-light);background:rgba(200,148,58,0.1);}
+.sidebar-nav a .icon{width:20px;text-align:center;}
+.sidebar-nav .divider{height:1px;background:rgba(255,255,255,0.06);margin:0.8rem 1.5rem;}
+.sidebar-nav .nav-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);padding:8px 1.5rem;}
+.sidebar-footer{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-footer a{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.5);text-decoration:none;font-size:13px;cursor:pointer;transition:var(--transition);}
+.sidebar-footer a:hover{color:var(--danger);}
+
+/* MAIN */
+.main-content{margin-left:260px;flex:1;min-height:100vh;}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar h2{font-size:1.3rem;color:var(--navy);}
+.topbar .admin-name{font-size:13px;color:var(--text-muted);}
+.hamburger-menu{display:none;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--navy);}
+.page-content{padding:2rem;}
+
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2rem;}
+.stat-card{background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:1.5rem;transition:var(--transition);}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.08);}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
+.stat-card .stat-icon.gold{background:rgba(200,148,58,0.12);}
+.stat-card .stat-icon.blue{background:rgba(46,125,212,0.12);}
+.stat-card .stat-icon.green{background:rgba(22,163,74,0.12);}
+.stat-card .stat-icon.red{background:rgba(220,53,69,0.12);}
+.stat-card h3{font-size:2rem;color:var(--navy);font-family:'Playfair Display',serif;}
+.stat-card p{font-size:13px;color:var(--text-muted);}
+
+/* FORMS & TABLES */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.section-header h3{font-size:1.4rem;color:var(--navy);}
+
+.data-table{width:100%;background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;border-collapse:collapse;}
+.data-table th{background:var(--navy);color:var(--white);padding:12px 16px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;text-align:left;font-family:'DM Sans',sans-serif;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.05);font-size:13.5px;color:var(--text-mid);vertical-align:top;}
+.data-table tr:hover td{background:rgba(200,148,58,0.03);}
+.data-table .actions{display:flex;gap:6px;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:var(--transition);font-family:'DM Sans',sans-serif;}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(200,148,58,0.4);}
+.btn-blue{background:var(--blue-light);color:var(--white);}
+.btn-danger{background:var(--danger);color:var(--white);}
+.btn-danger:hover{background:#c82333;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text-mid);}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--white);border-radius:var(--r-lg);padding:2rem;width:100%;max-width:700px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.modal h3{font-size:1.3rem;color:var(--navy);margin-bottom:1.5rem;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);}
+
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text-mid);letter-spacing:0.5px;margin-bottom:6px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border-radius:8px;border:1.5px solid rgba(0,0,0,0.1);background:var(--cream);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text-dark);transition:var(--transition);outline:none;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--gold);background:var(--white);box-shadow:0 0 0 3px rgba(200,148,58,0.1);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+
+/* BADGES */
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:100px;letter-spacing:0.5px;text-transform:uppercase;}
+.badge-success{background:rgba(22,163,74,0.12);color:var(--success);}
+.badge-warning{background:rgba(245,158,11,0.12);color:var(--warning);}
+.badge-danger{background:rgba(220,53,69,0.12);color:var(--danger);}
+.badge-info{background:rgba(46,125,212,0.12);color:var(--blue-light);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;z-index:9999;background:var(--navy);border-radius:var(--r);padding:1rem 1.5rem;display:flex;align-items:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,0.3);transform:translateX(200%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);max-width:360px;}
+.toast.show{transform:translateX(0);}
+.toast.success{border-left:4px solid var(--success);}
+.toast.error{border-left:4px solid var(--danger);}
+.toast p{font-size:13.5px;color:var(--white);}
+
+/* TABS */
+.tab-bar{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+.tab-btn{padding:8px 18px;border-radius:100px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);color:var(--text-muted);}
+.tab-btn.active,.tab-btn:hover{background:var(--navy);color:var(--white);border-color:var(--navy);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:var(--transition);}
+  .sidebar.open{transform:translateX(0);}
+  .main-content{margin-left:0;}
+  .hamburger-menu{display:block;}
+  .form-row{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr;}
+  .page-content{padding:1rem;}
+  .data-table{font-size:12px;}
+  .data-table th,.data-table td{padding:8px 10px;}
+}
+
+.empty-state{text-align:center;padding:3rem;color:var(--text-muted);}
+.empty-state .icon{font-size:3rem;margin-bottom:1rem;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="login-page" id="loginPage">
+  <div class="login-card">
+    <div class="logo"><span>AUS</span></div>
+    <h1>Admin Panel</h1>
+    <p class="subtitle">Amaidonah Universal Solutions</p>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="loginEmail" placeholder="admin@aus.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div style="margin-top:1rem;">
+      <button class="btn btn-outline btn-sm w-100" onclick="showSignUp()">Create Account</button>
+      <button class="btn btn-outline btn-sm w-100 mt-2" onclick="showForgotPassword()">Forgot Password</button>
+    </div>
+    <p id="loginError" style="color:var(--danger);text-align:center;margin-top:1rem;font-size:13px;display:none;"></p>
+  </div>
+</div>
+
+<!-- SIGN UP PAGE -->
+<div class="login-page" id="signUpPage" style="display:none;">
+  <div class="login-card">
+    <div class="logo"><span>AUS</span></div>
+    <h1>Create Account</h1>
+    <p class="subtitle">Amaidonah Universal Solutions</p>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" id="signUpName" placeholder="Full name">
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="signUpEmail" placeholder="admin@aus.com">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="signUpPassword" placeholder="Enter password">
+    </div>
+    <div style="margin-top:1rem;">
+      <button class="btn btn-gold w-100" onclick="doSignUp()">Create Account</button>
+      <button class="btn btn-outline w-100 mt-2" onclick="showLogin()">Back to Login</button>
+    </div>
+    <p id="signUpError" style="color:var(--danger);text-align:center;margin-top:1rem;font-size:13px;display:none;"></p>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD PAGE -->
+<div class="login-page" id="forgotPasswordPage" style="display:none;">
+  <div class="login-card">
+    <div class="logo"><span>AUS</span></div>
+    <h1>Forgot Password</h1>
+    <p class="subtitle">Amaidonah Universal Solutions</p>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="forgotEmail" placeholder="admin@aus.com">
+    </div>
+    <div style="margin-top:1rem;">
+      <button class="btn btn-gold w-100" onclick="doForgotPassword()">Send Reset Link</button>
+      <button class="btn btn-outline w-100 mt-2" onclick="showLogin()">Back to Login</button>
+    </div>
+    <p id="forgotError" style="color:var(--danger);text-align:center;margin-top:1rem;font-size:13px;display:none;"></p>
+  </div>
+</div>
+
+<!-- ADMIN LAYOUT -->
+<div class="admin-layout" id="adminLayout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>AUS Admin</h2>
+      <p>Management Panel</p>
+    </div>
+    <nav class="sidebar-nav">
+      <a onclick="showPage('dashboard')" data-page="dashboard"><span class="icon">📊</span> Dashboard</a>
+      <div class="nav-label">Content</div>
+      <a onclick="showPage('about')" data-page="about"><span class="icon">ℹ️</span> About</a>
+      <a onclick="showPage('core_values')" data-page="core_values"><span class="icon">🌟</span> Core Values</a>
+      <a onclick="showPage('team_members')" data-page="team_members"><span class="icon">👥</span> Team Members</a>
+      <a onclick="showPage('services')" data-page="services"><span class="icon">⚡</span> Services</a>
+      <a onclick="showPage('projects')" data-page="projects"><span class="icon">📋</span> Projects</a>
+      <a onclick="showPage('gallery_items')" data-page="gallery_items"><span class="icon">🖼️</span> Gallery</a>
+      <a onclick="showPage('blog_posts')" data-page="blog_posts"><span class="icon">📰</span> Blog Posts</a>
+      <div class="divider"></div>
+      <div class="nav-label">Events</div>
+      <a onclick="showPage('pageant_winners')" data-page="pageant_winners"><span class="icon">👑</span> Pageant Winners</a>
+      <a onclick="showPage('pageant_packages')" data-page="pageant_packages"><span class="icon">📦</span> Pageant Packages</a>
+      <a onclick="showPage('sponsor_packages')" data-page="sponsor_packages"><span class="icon">🤝</span> Sponsor Packages</a>
+      <a onclick="showPage('training_schedule')" data-page="training_schedule"><span class="icon">📅</span> Training Schedule</a>
+      <div class="divider"></div>
+      <div class="nav-label">Submissions</div>
+      <a onclick="showPage('contact_submissions')" data-page="contact_submissions"><span class="icon">📧</span> Contact Forms</a>
+      <a onclick="showPage('model_applications')" data-page="model_applications"><span class="icon">✨</span> Model Applications</a>
+      <a onclick="showPage('partnership_inquiries')" data-page="partnership_inquiries"><span class="icon">💼</span> Partner Inquiries</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a onclick="doLogout()">🚪 Logout</a>
+    </div>
+  </aside>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="hamburger-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+        <h2 id="pageTitle">Dashboard</h2>
+      </div>
+      <span class="admin-name" id="adminName">Admin</span>
+    </div>
+    <div class="page-content" id="pageContent"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">Add Item</h3>
+    <div id="modalForm"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-gold" id="modalSave" onclick="saveModal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><p id="toastText"></p></div>
+
+<script>
+const API = '';
+let token = localStorage.getItem('aus_admin_token');
+let currentPage = '';
+let editingId = null;
+let currentTable = '';
+
+const TABLE_SCHEMAS = {
+  about: {fields:[{k:'section_title',l:'Section Title',t:'text'},{k:'description',l:'Description',t:'textarea'},{k:'mission',l:'Mission',t:'textarea'},{k:'vision',l:'Vision',t:'textarea'},{k:'quote',l:'Quote',t:'textarea'},{k:'founded_year',l:'Founded Year',t:'text'},{k:'image_url',l:'Image URL',t:'text'}],label:'About Section',plural:'About'},
+  core_values: {fields:[{k:'icon',l:'Icon (emoji)',t:'text'},{k:'title',l:'Title',t:'text'},{k:'description',l:'Description',t:'textarea'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Core Value',plural:'Core Values'},
+  team_members: {fields:[{k:'name',l:'Name',t:'text'},{k:'role',l:'Role',t:'text'},{k:'initials',l:'Initials',t:'text'},{k:'bio',l:'Bio',t:'textarea'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Team Member',plural:'Team Members'},
+  services: {fields:[{k:'number',l:'Number',t:'text'},{k:'icon',l:'Icon (emoji)',t:'text'},{k:'title',l:'Title',t:'text'},{k:'description',l:'Description',t:'textarea'},{k:'link_section',l:'Link Section',t:'text'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Service',plural:'Services'},
+  pageant_winners: {fields:[{k:'year',l:'Year',t:'text'},{k:'name',l:'Name',t:'text'},{k:'title',l:'Title',t:'text'},{k:'initial',l:'Initial',t:'text'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Pageant Winner',plural:'Pageant Winners'},
+  pageant_packages: {fields:[{k:'name',l:'Name',t:'text'},{k:'price',l:'Price',t:'text'},{k:'features',l:'Features (one per line)',t:'textarea'},{k:'is_featured',l:'Featured',t:'checkbox'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Pageant Package',plural:'Pageant Packages'},
+  sponsor_packages: {fields:[{k:'name',l:'Name',t:'text'},{k:'tier',l:'Tier',t:'select',opts:['bronze','silver','gold','platinum']},{k:'price',l:'Price',t:'text'},{k:'features',l:'Features (one per line)',t:'textarea'},{k:'is_highlighted',l:'Highlighted',t:'checkbox'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Sponsor Package',plural:'Sponsor Packages'},
+  projects: {fields:[{k:'icon',l:'Icon (emoji)',t:'text'},{k:'category',l:'Category',t:'text'},{k:'cat_filter',l:'Filter Category',t:'select',opts:['tech','event','community']},{k:'title',l:'Title',t:'text'},{k:'description',l:'Description',t:'textarea'},{k:'status',l:'Status',t:'select',opts:['completed','upcoming']},{k:'meta_date',l:'Meta Date',t:'text'},{k:'meta_info',l:'Meta Info',t:'text'},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Project',plural:'Projects'},
+  gallery_items: {fields:[{k:'emoji',l:'Emoji',t:'text'},{k:'title',l:'Title',t:'text'},{k:'category',l:'Category',t:'text'},{k:'cat_filter',l:'Filter Category',t:'select',opts:['pageant','fashion','tech','community']},{k:'image_url',l:'Image URL',t:'text'},{k:'sort_order',l:'Sort Order',t:'number'}],label:'Gallery Item',plural:'Gallery Items'},
+  blog_posts: {fields:[{k:'icon',l:'Icon (emoji)',t:'text'},{k:'tag',l:'Tag',t:'text'},{k:'title',l:'Title',t:'text'},{k:'excerpt',l:'Excerpt',t:'textarea'},{k:'content',l:'Content',t:'textarea'},{k:'read_time',l:'Read Time',t:'text'},{k:'published',l:'Published',t:'checkbox'},{k:'image_url',l:'Image URL',t:'text'}],label:'Blog Post',plural:'Blog Posts'},
+  training_schedule: {fields:[{k:'day',l:'Day',t:'text'},{k:'month',l:'Month',t:'text'},{k:'title',l:'Title',t:'text'},{k:'location',l:'Location',t:'text'},{k:'time_range',l:'Time Range',t:'text'},{k:'status',l:'Status',t:'select',opts:['open','filling_fast','full']},{k:'sort_order',l:'Sort Order',t:'number'},{k:'image_url',l:'Image URL',t:'text'}],label:'Training Session',plural:'Training Schedule'}
+};
+
+function headers(){return{'Content-Type':'application/json','Authorization':'Bearer '+token};}
+function authHeaders(){return headers();}
+
+async function api(path,opts={}){
+  const res=await fetch(API+path,{headers:authHeaders(),...opts});
+  if(res.status===401){doLogout();throw new Error('Unauthorized');}
+  if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||'Request failed');}
+  return res.json();
+}
+
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.className='toast '+type;
+  document.getElementById('toastText').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function openModal(){
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modal').classList.remove('open');
+  editingId=null;
+  currentTable='';
+}
+
+// ─── AUTH ───
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value;
+  const password=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginError');
+  try{
+    const data=await api(API+'/api/auth/login',{method:'POST',body:JSON.stringify({email,password})});
+    token=data.token;
+    localStorage.setItem('aus_admin_token',token);
+    document.getElementById('adminName').textContent=data.admin.name;
+    enterAdmin();
+  }catch(e){
+    errEl.textContent=e.message||'Invalid credentials';
+    errEl.style.display='block';
+  }
+}
+
+function showPageOnly(id){
+  ['loginPage','signUpPage','forgotPasswordPage'].forEach(p=>{
+    document.getElementById(p).style.display=(p===id)?'flex':'none';
+  });
+}
+
+function showSignUp(){
+  showPageOnly('signUpPage');
+}
+
+function showLogin(){
+  showPageOnly('loginPage');
+}
+
+function doSignUp(){
+  const name=document.getElementById('signUpName').value;
+  const email=document.getElementById('signUpEmail').value;
+  const password=document.getElementById('signUpPassword').value;
+  const errEl=document.getElementById('signUpError');
+  api(API+'/api/auth/register',{method:'POST',body:JSON.stringify({name,email,password})}).then(data=>{
+    token=data.token;
+    localStorage.setItem('aus_admin_token',token);
+    document.getElementById('adminName').textContent=data.admin.name;
+    enterAdmin();
+  }).catch(e=>{
+    errEl.textContent=e.message||'Registration failed';
+    errEl.style.display='block';
+  });
+}
+
+function showForgotPassword(){
+  showPageOnly('forgotPasswordPage');
+}
+
+function doForgotPassword(){
+  const email=document.getElementById('forgotEmail').value;
+  const errEl=document.getElementById('forgotError');
+  api(API+'/api/auth/forgot-password',{method:'POST',body:JSON.stringify({email})}).then(data=>{
+    if(data.resetToken){
+      // In a real app, send email with reset link
+      // For now, show the token (not secure for production)
+      errEl.textContent='Reset token: '+data.resetToken;
+      errEl.style.display='block';
+    }else{
+      errEl.textContent=data.message||'If an account with that email exists, a reset link has been sent';
+      errEl.style.display='block';
+    }
+  }).catch(e=>{
+    errEl.textContent=e.message||'Error sending reset request';
+    errEl.style.display='block';
+  });
+}
+
+function doLogout(){
+  token=null;
+  localStorage.removeItem('aus_admin_token');
+  showPageOnly('loginPage');
+  document.getElementById('adminLayout').classList.remove('active');
+}
+
+async function enterAdmin(){
+  document.getElementById('loginPage').style.display='none';
+  document.getElementById('signUpPage').style.display='none';
+  document.getElementById('forgotPasswordPage').style.display='none';
+  document.getElementById('adminLayout').classList.add('active');
+  showPage('dashboard');
+}
+
+// ─── NAVIGATION ───
+function showPage(page){
+  currentPage=page;
+  document.querySelectorAll('.sidebar-nav a').forEach(a=>a.classList.toggle('active',a.dataset.page===page));
+  document.getElementById('sidebar').classList.remove('open');
+
+  if(page==='dashboard') renderDashboard();
+  else if(page==='settings') renderSettings();
+  else if(TABLE_SCHEMAS[page]) renderTablePage(page);
+  else if(page==='contact_submissions') renderSubmissions('contact_submissions','Contact Submissions','contact_submissions');
+  else if(page==='model_applications') renderSubmissions('model_applications','Model Applications','model_applications');
+  else if(page==='partnership_inquiries') renderSubmissions('partnership_inquiries','Partnership Inquiries','partnership_inquiries');
+}
+
+// ─── DASHBOARD ───
+async function renderDashboard(){
+  document.getElementById('pageTitle').textContent='Dashboard';
+  try{
+    const d=await api(API+'/api/dashboard');
+    document.getElementById('pageContent').innerHTML=`
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon gold">📧</div><h3>${d.contactSubmissions.total}</h3><p>Contact Submissions <span class="badge badge-danger">${d.contactSubmissions.unread} unread</span></p></div>
+        <div class="stat-card"><div class="stat-icon blue">✨</div><h3>${d.modelApplications.total}</h3><p>Model Applications <span class="badge badge-danger">${d.modelApplications.unread} unread</span></p></div>
+        <div class="stat-card"><div class="stat-icon green">💼</div><h3>${d.partnershipInquiries.total}</h3><p>Partner Inquiries <span class="badge badge-danger">${d.partnershipInquiries.unread} unread</span></p></div>
+        <div class="stat-card"><div class="stat-icon gold">📰</div><h3>${d.blogPosts}</h3><p>Blog Posts</p></div>
+        <div class="stat-card"><div class="stat-icon blue">📋</div><h3>${d.projects}</h3><p>Projects</p></div>
+        <div class="stat-card"><div class="stat-icon green">🖼️</div><h3>${d.galleryItems}</h3><p>Gallery Items</p></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+        <div style="background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:2rem;">
+          <h4 style="font-size:1rem;color:var(--navy);margin-bottom:1rem;">Quick Actions</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:0.8rem;">
+            <button class="btn btn-gold btn-sm" onclick="showPage('blog_posts');setTimeout(()=>openCreate('blog_posts'),100)">+ New Blog Post</button>
+            <button class="btn btn-blue btn-sm" onclick="showPage('projects');setTimeout(()=>openCreate('projects'),100)">+ New Project</button>
+            <button class="btn btn-outline btn-sm" onclick="showPage('gallery_items');setTimeout(()=>openCreate('gallery_items'),100)">+ New Gallery Item</button>
+            <button class="btn btn-outline btn-sm" onclick="showPage('settings')">Edit Site Settings</button>
+          </div>
+        </div>
+        <div style="background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:2rem;">
+          <h4 style="font-size:1rem;color:var(--navy);margin-bottom:1rem;">Recent Submissions</h4>
+          <p style="font-size:13px;color:var(--text-muted);">Check the Submissions section to review contact forms, model applications, and partnership inquiries.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1rem;">
+            <button class="btn btn-outline btn-sm" onclick="showPage('contact_submissions')">📧 Contacts</button>
+            <button class="btn btn-outline btn-sm" onclick="showPage('model_applications')">✨ Models</button>
+            <button class="btn btn-outline btn-sm" onclick="showPage('partnership_inquiries')">💼 Partners</button>
+          </div>
+        </div>
+      </div>`;
+  }catch(e){document.getElementById('pageContent').innerHTML='<p>Error loading dashboard</p>';}
+}
+
+// ─── SETTINGS ───
+async function renderSettings(){
+  document.getElementById('pageTitle').textContent='Site Settings';
+  try{
+    const s=await api(API+'/api/settings');
+    const groups={
+      'Hero Section':['company_name','slogan','hero_description','hero_badge'],
+      'Hero Stats':['hero_stat_1_num','hero_stat_1_label','hero_stat_2_num','hero_stat_2_label','hero_stat_3_num','hero_stat_3_label','hero_stat_4_num','hero_stat_4_label'],
+      'Contact Info':['contact_email','contact_phone','contact_location','contact_whatsapp','contact_hours'],
+      'Social Links':['social_instagram','social_facebook','social_tiktok','social_youtube'],
+      'Footer':['footer_description']
+    };
+    let html='';
+    for(const[g,label]of Object.entries(groups)){
+      html+=`<div style="background:var(--white);border-radius:var(--r);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem;">
+        <h4 style="font-size:1rem;color:var(--navy);margin-bottom:1rem;">${label}</h4>`;
+      for(const k of Object.keys(groups[g])){
+        const val=s[k]||'';
+        const isLong=val.length>80;
+        html+=`<div class="form-group"><label>${k.replace(/_/g,' ')}</label>`;
+        if(isLong) html+=`<textarea id="set_${k}" rows="3">${val}</textarea>`;
+        else html+=`<input type="text" id="set_${k}" value="${val.replace(/"/g,'&quot;')}">`;
+        html+=`</div>`;
+      }
+      html+=`</div>`;
+    }
+    html+=`<button class="btn btn-gold" onclick="saveSettings()">Save All Settings</button>`;
+    document.getElementById('pageContent').innerHTML=html;
+  }catch(e){showToast('Error loading settings','error');}
+}
+
+async function saveSettings(){
+  try{
+    const inputs=document.querySelectorAll('[id^="set_"]');
+    const data={};
+    inputs.forEach(inp=>{data[inp.id.replace('set_','')]=inp.value;});
+    await api(API+'/api/settings',{method:'PUT',body:JSON.stringify(data)});
+    showToast('Settings saved!');
+  }catch(e){showToast('Error saving: '+e.message,'error');}
+}
+
+// ─── GENERIC TABLE PAGE ───
+async function renderTablePage(table){
+  const schema=TABLE_SCHEMAS[table];
+  document.getElementById('pageTitle').textContent=schema.plural;
+  try{
+    const items=await api(API+'/api/'+table);
+    let html=`<div class="section-header"><h3>${schema.plural}</h3><button class="btn btn-gold" onclick="openCreate('${table}')">+ Add ${schema.label}</button></div>`;
+    if(items.length===0){
+      html+=`<div class="empty-state"><div class="icon">📭</div><p>No ${schema.plural.toLowerCase()} yet. Click "Add ${schema.label}" to create one.</p></div>`;
+    }else{
+      html+=`<div style="overflow-x:auto;"><table class="data-table"><thead><tr>`;
+      html+=`<th>#</th>`;
+      schema.fields.slice(0,4).forEach(f=>html+=`<th>${f.l}</th>`);
+      html+=`<th>Actions</th></tr></thead><tbody>`;
+      items.forEach((item,i)=>{
+        html+=`<tr><td>${i+1}</td>`;
+        schema.fields.slice(0,4).forEach(f=>{
+          let val=item[f.k]||'';
+          if(typeof val==='boolean') val=val?'✅':'❌';
+          if(typeof val==='string'&&val.length>60) val=val.substring(0,60)+'...';
+          html+=`<td>${val}</td>`;
+        });
+        html+=`<td class="actions"><button class="btn btn-blue btn-sm" onclick="openEdit('${table}',${item.id})">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteItem('${table}',${item.id})">Delete</button></td></tr>`;
+      });
+      html+=`</tbody></table></div>`;
+    }
+    document.getElementById('pageContent').innerHTML=html;
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+function openCreate(table){
+  editingId=null;
+  currentTable=table;
+  const schema=TABLE_SCHEMAS[table];
+  document.getElementById('modalTitle').textContent='Add '+schema.label;
+  renderForm(table,{});
+  openModal();
+}
+
+function openEdit(table,id){
+  currentTable=table;
+  editingId=id;
+  const schema=TABLE_SCHEMAS[table];
+  document.getElementById('modalTitle').textContent='Edit '+schema.label;
+  api(API+'/api/'+table+'/'+id).then(item=>{renderForm(table,item);openModal();}).catch(e=>showToast('Error','error'));
+}
+
+function renderForm(table,item){
+  const schema=TABLE_SCHEMAS[table];
+  let html='';
+  schema.fields.forEach(f=>{
+    let val=item[f.k]||'';
+    if(Array.isArray(val)) val=val.join('\n');
+    if(f.t==='checkbox'){
+      html+=`<div class="form-group"><label><input type="checkbox" id="f_${f.k}" ${val?'checked':''}> ${f.l}</label></div>`;
+    }else if(f.t==='textarea'){
+      html+=`<div class="form-group"><label>${f.l}</label><textarea id="f_${f.k}" rows="4">${val}</textarea></div>`;
+    }else if(f.t==='select'){
+      html+=`<div class="form-group"><label>${f.l}</label><select id="f_${f.k}">`;
+      (f.opts||[]).forEach(o=>html+=`<option value="${o}" ${val===o?'selected':''}>${o}</option>`);
+      html+=`</select></div>`;
+    }else if(f.t==='number'){
+      html+=`<div class="form-group"><label>${f.l}</label><input type="number" id="f_${f.k}" value="${val}"></div>`;
+    }else if(f.t==='file'){
+      html+=`<div class="form-group"><label>${f.l}</label><input type="file" id="f_${f.k}" accept="image/*,video/*"></div>`;
+      if(val && val.startsWith('http')) {
+        html+=`<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">Current: <a href="${val}" target="_blank">View existing</a></div>`;
+      }
+    }else{
+      html+=`<div class="form-group"><label>${f.l}</label><input type="text" id="f_${f.k}" value="${String(val).replace(/"/g,'"')}"></div>`;
+    }
+  });
+  document.getElementById('modalForm').innerHTML=html;
+}
+
+async function saveModal(){
+  const schema=TABLE_SCHEMAS[currentTable];
+  const data={};
+  let hasNewImage = false;
+  schema.fields.forEach(f=>{
+    if(f.t==='checkbox') data[f.k]=document.getElementById('f_'+f.k).checked;
+    else if(f.k==='features'){
+      const val=document.getElementById('f_'+f.k).value;
+      data[f.k]=val.split('\n').map(s=>s.trim()).filter(Boolean);
+    }
+    else if(f.t==='number') data[f.k]=parseInt(document.getElementById('f_'+f.k).value)||0;
+    else if(f.t==='file'){
+      const fileInput = document.getElementById('f_'+f.k);
+      if(fileInput.files && fileInput.files[0]){
+        // File uploaded - we'll handle this via a different mechanism
+        // For now, store the file path placeholder
+        data[f.k] = 'upload_in_progress';
+        hasNewImage = true;
+      }else if(val){
+        data[f.k] = val;
+      }
+    }
+    else data[f.k]=document.getElementById('f_'+f.k).value;
+  });
+  try{
+    if(editingId){
+      await api(API+'/api/'+currentTable+'/'+editingId,{method:'PUT',body:JSON.stringify(data)});
+      showToast('Updated!');
+    }else{
+      await api(API+'/api/'+currentTable,{method:'POST',body:JSON.stringify(data)});
+      showToast('Created!');
+    }
+    closeModal();
+    showPage(currentTable);
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function deleteItem(table,id){
+  if(!confirm('Are you sure you want to delete this item?'))return;
+  try{
+    await api(API+'/api/'+table+'/'+id,{method:'DELETE'});
+    showToast('Deleted!');
+    showPage(table);
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+// ─── SUBMISSIONS ───
+async function renderSubmissions(table,title,apiPath){
+  document.getElementById('pageTitle').textContent=title;
+  try{
+    const items=await api(API+'/api/submissions/'+apiPath);
+    let html=`<div class="section-header"><h3>${title}</h3><span class="badge badge-info">${items.length} total</span></div>`;
+    if(items.length===0){
+      html+=`<div class="empty-state"><div class="icon">📭</div><p>No submissions yet.</p></div>`;
+    }else{
+      html+=`<div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>#</th><th>Date</th><th>Details</th><th>Status</th><th>Actions</th></tr></thead><tbody>`;
+      items.forEach((item,i)=>{
+        const date=new Date(item.created_at).toLocaleDateString();
+        let details='';
+        if(table==='contact_submissions') details=`<strong>${item.first_name} ${item.last_name}</strong><br>${item.email}<br>${item.phone||''}<br><em>${item.subject||''}</em>`;
+        else if(table==='model_applications') details=`<strong>${item.full_name}</strong><br>${item.email} · ${item.phone||''}<br>Age: ${item.age} · ${item.state||''}`;
+        else details=`<strong>${item.company_name||''}</strong><br>${item.contact_person||''}<br>${item.email||''}<br><em>${item.interest||''}</em>`;
+        html+=`<tr style="${!item.read?'background:rgba(200,148,58,0.04);':''}"><td>${i+1}</td><td>${date}</td><td>${details}</td><td>${item.read?'<span class="badge badge-success">Read</span>':'<span class="badge badge-warning">New</span>'}</td>`;
+        html+=`<td>`;
+        if(!item.read) html+=`<button class="btn btn-blue btn-sm" onclick="markRead('${apiPath}',${item.id})">Mark Read</button>`;
+        if(item.message||item.about) html+=` <button class="btn btn-outline btn-sm" onclick="viewSubmission('${apiPath}',${item.id})">View</button>`;
+        html+=`</td></tr>`;
+      });
+      html+=`</tbody></table></div>`;
+    }
+    document.getElementById('pageContent').innerHTML=html;
+  }catch(e){showToast('Error: '+e.message,'error');}
+}
+
+async function markRead(path,id){
+  try{
+    await api(API+'/api/submissions/'+path+'/'+id+'/read',{method:'PUT'});
+    showToast('Marked as read');
+    showPage(currentPage);
+  }catch(e){showToast('Error','error');}
+}
+
+async function viewSubmission(path,id){
+  try{
+    const items=await api(API+'/api/submissions/'+path);
+    const item=items.find(i=>i.id===id);
+    if(!item) return;
+    let details=Object.entries(item).filter(([k,v])=>v&&k!=='id'&&k!=='read'&&k!=='created_at').map(([k,v])=>`<p><strong>${k.replace(/_/g,' ')}:</strong> ${v}</p>`).join('');
+    document.getElementById('modalTitle').textContent='Submission Details';
+    document.getElementById('modalForm').innerHTML=`<div style="font-size:14px;line-height:1.8;">${details}</div>`;
+    document.getElementById('modalSave').style.display='none';
+    openModal();
+    document.getElementById('modalSave').style.display='';
+  }catch(e){showToast('Error','error');}
+}
+
+// ─── INIT ───
+if(token){
+  api(API+'/api/auth/me').then(()=>enterAdmin()).catch(()=>{
+    enterAdmin();
+  });
+}
+
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+</script>
+</body>
+</html>
