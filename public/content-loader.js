@@ -47,7 +47,6 @@ async function loadSettings() {
     if (desc) desc.textContent = s.hero_description;
   }
   
-  // Hero stats
   for (let i = 1; i <= 4; i++) {
     const num = s[`hero_stat_${i}_num`];
     const label = s[`hero_stat_${i}_label`];
@@ -58,7 +57,6 @@ async function loadSettings() {
     }
   }
 
-  // Contact
   if (s.contact_email) {
     document.querySelectorAll('a[href^="mailto:"]').forEach(a => { a.href = 'mailto:' + s.contact_email; a.textContent = s.contact_email; });
   }
@@ -150,7 +148,9 @@ async function loadTeamMembers() {
   if (!container) return;
   container.innerHTML = items.map(m => `
     <div class="team-card">
-      <div class="team-avatar">${m.initials}</div>
+      <div class="team-avatar">
+        ${m.image_url ? `<img src="${m.image_url}" alt="${m.name}" style="width:100%;height:180px;object-fit:cover;">` : m.initials}
+      </div>
       <div class="team-info">
         <h4>${m.name}</h4>
         <div class="role">${m.role}</div>
@@ -172,9 +172,33 @@ async function loadServices() {
       <span class="service-icon">${s.icon}</span>
       <h3>${s.title}</h3>
       <p>${s.description}</p>
-      <a href="#" class="service-link" onclick="showSection('${s.link_section || 'contact'}')">Learn More</a>
+      <a href="#" class="service-link" onclick="openServiceModal(${s.id});return false;">Learn More</a>
     </div>
   `).join('');
+}
+
+// ─── SERVICE DETAIL MODAL ───
+async function openServiceModal(id) {
+  const item = await fetchJSON('/api/services/' + id);
+  if (!item) return;
+  const modal = document.getElementById('blogModal');
+  const title = document.getElementById('blogModalTitle');
+  const content = document.getElementById('blogModalContent');
+  title.textContent = item.title || 'Service Details';
+  const imgHtml = item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="width:100%;max-height:300px;object-fit:cover;border-radius:var(--r);margin-bottom:1.5rem;">` : '';
+  content.innerHTML = `<div style="font-size:15px;line-height:1.8;">
+    ${imgHtml}
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+      <span style="font-size:2rem;">${item.icon || ''}</span>
+      <span style="font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:rgba(200,148,58,0.2);">${item.number || ''}</span>
+    </div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--navy);margin-bottom:1rem;">${item.title}</h2>
+    <p style="color:var(--text-muted);line-height:1.9;margin-bottom:1.5rem;">${item.description || 'No additional details available.'}</p>
+    <div style="padding-top:1rem;border-top:1px solid rgba(200,148,58,0.2);font-size:13px;color:var(--text-muted);">
+      For more information, <a href="#" onclick="closeBlogModal();showSection('${item.link_section || 'contact'}');return false;" style="color:var(--gold);font-weight:600;">contact us</a>.
+    </div>
+  </div>`;
+  modal.classList.add('open');
 }
 
 // ─── PAGEANT WINNERS ───
@@ -185,7 +209,9 @@ async function loadPageantWinners() {
   if (!container) return;
   container.innerHTML = items.map(w => `
     <div class="winner-card">
-      <div class="winner-avatar">${w.initial}</div>
+      <div class="winner-avatar">
+        ${w.image_url ? `<img src="${w.image_url}" alt="${w.name}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">` : w.initial}
+      </div>
       <div class="year">${w.year}</div>
       <h4>${w.name}</h4>
       <p>${w.title}</p>
@@ -236,7 +262,8 @@ async function loadProjects() {
   if (!container) return;
   container.innerHTML = items.map(p => `
     <div class="project-card" data-cat="${p.cat_filter}">
-      <div class="project-img">${p.icon}
+      <div class="project-img" style="${p.image_url ? 'background:none;' : ''}">
+        ${p.image_url ? `<img src="${p.image_url}" alt="${p.title}" style="width:100%;height:180px;object-fit:cover;">` : p.icon}
         <span class="proj-status ${p.status === 'completed' ? 'status-done' : 'status-upcoming'}">${p.status === 'completed' ? 'Completed' : 'Upcoming'}</span>
       </div>
       <div class="project-body">
@@ -275,14 +302,15 @@ async function loadBlogPosts() {
   if (!container) return;
   container.innerHTML = items.filter(b => b.published).map(b => `
     <div class="blog-card">
-      <div class="blog-img">${b.icon}
+      <div class="blog-img" style="${b.image_url ? 'background:none;' : ''}">
+        ${b.image_url ? `<img src="${b.image_url}" alt="${b.title}" style="width:100%;height:180px;object-fit:cover;">` : b.icon}
         <span class="blog-tag">${b.tag}</span>
       </div>
       <div class="blog-body">
         <div class="blog-meta"><span>${b.created_at ? new Date(b.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''}</span> · <span>${b.read_time || ''}</span></div>
         <h3>${b.title}</h3>
         <p>${b.excerpt || ''}</p>
-        <a href="#" class="blog-read" onclick="viewBlogPost(${b.id})">Read Article</a>
+        <a href="#" class="blog-read" onclick="viewBlogPost(${b.id});return false;">Read Article</a>
       </div>
     </div>
   `).join('');
@@ -298,22 +326,18 @@ function openBlogModal() {
       return;
     }
     const date = item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-    const readTime = item.read_time || '5 min read';
-    const published = item.published ? 'Yes' : 'No';
-    const tags = item.tag || '';
-    const html = `
-      <div style="font-size:16px; line-height: 1.8;">
-        <p><strong>Title:</strong> ${item.title}</p>
-        <p><strong>Tag:</strong> ${tags}</p>
-        <p><strong>Published:</strong> ${published}</p>
-        <p><strong>Read Time:</strong> ${readTime}</p>
-        ${item.excerpt ? `<p><strong>Excerpt:</strong> ${item.excerpt}</p>` : ''}
-        ${item.content ? `<p><strong>Full Content:</strong> ${item.content}</p>` : ''}
-        <p><strong>Created:</strong> ${date}</p>
+    const imgHtml = item.image_url ? `<img src="${item.image_url}" alt="${item.title}" style="width:100%;max-height:350px;object-fit:cover;border-radius:var(--r);margin-bottom:1.5rem;">` : '';
+    document.getElementById('blogModalTitle').textContent = item.title || 'Blog Post Details';
+    document.getElementById('blogModalContent').innerHTML = `<div style="font-size:15px;line-height:1.8;max-height:80vh;overflow-y:auto;">
+      ${imgHtml}
+      <div style="display:flex;gap:1rem;margin-bottom:1rem;font-size:13px;color:var(--text-muted);">
+        <span>${date}</span>
+        <span>· ${item.read_time || '5 min read'}</span>
+        ${item.tag ? `<span>· ${item.tag}</span>` : ''}
       </div>
-    `;
-    document.getElementById('blogModalTitle').textContent = 'Blog Post Details';
-    document.getElementById('blogModalContent').innerHTML = `<div style="font-size:14px; line-height: 1.8; max-height: 80vh; overflow-y: auto;">${html}</div>`;
+      ${item.excerpt ? `<p style="font-style:italic;color:var(--text-mid);margin-bottom:1rem;">${item.excerpt}</p>` : ''}
+      <div style="margin-top:1rem;">${item.content || '<p style="color:var(--text-muted);">No full content available for this post.</p>'}</div>
+    </div>`;
     document.getElementById('blogModal').classList.add('open');
   }).catch(e => console.warn('Error loading post', e));
 }
@@ -333,7 +357,6 @@ async function loadTrainingSchedule() {
   if (!items || items.length === 0) return;
   const container = document.querySelector('.training-schedule');
   if (!container) return;
-  const header = container.querySelector('.schedule-header');
   const existingItems = container.querySelectorAll('.schedule-item');
   existingItems.forEach(el => el.remove());
 
@@ -356,7 +379,7 @@ async function loadTrainingSchedule() {
 
 // ─── FORM SUBMISSIONS ───
 async function submitForm() {
-  showNotif('Thank you! We\'ll be in touch within 24 hours. 🎉');
+  showNotif('Thank you! We\'ll be in touch within 24 hours.');
 }
 
 // ─── LOAD ON READY ───
