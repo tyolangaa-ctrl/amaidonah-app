@@ -467,23 +467,23 @@
           <p>Join our next training cohort. Limited spots available. Open to all ages 16–35.</p>
           <div class="form-field">
             <label>Full Name</label>
-            <input type="text" placeholder="Your full name">
+            <input type="text" id="modelName" placeholder="Your full name">
           </div>
           <div class="form-field">
             <label>Email Address</label>
-            <input type="email" placeholder="your@email.com">
+            <input type="email" id="modelEmail" placeholder="your@email.com">
           </div>
           <div class="form-field">
             <label>Phone Number</label>
-            <input type="tel" placeholder="+234 xxx xxxx xxx">
+            <input type="tel" id="modelPhone" placeholder="+234 xxx xxxx xxx">
           </div>
           <div class="form-field">
             <label>Age</label>
-            <input type="number" placeholder="Your age (16–35)" min="16" max="35">
+            <input type="number" id="modelAge" placeholder="Your age (16–35)" min="16" max="35">
           </div>
           <div class="form-field">
             <label>State of Origin</label>
-            <select>
+            <select id="modelState">
               <option value="">Select state...</option>
               <option>Abuja (FCT)</option>
               <option>Lagos</option>
@@ -496,9 +496,13 @@
           </div>
           <div class="form-field">
             <label>Brief About Yourself</label>
-            <textarea placeholder="Tell us a little about yourself and why you want to be a CESI Model..."></textarea>
+            <textarea id="modelAbout" placeholder="Tell us a little about yourself and why you want to be a CESI Model..."></textarea>
           </div>
-          <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitForm()">Submit Application ✨</button>
+          <div class="form-field">
+            <label>Your Photo (required)</label>
+            <input type="file" id="modelPhoto" accept="image/*" required>
+          </div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitModelForm()">Submit Application ✨</button>
         </div>
       </div>
     </div>
@@ -750,27 +754,23 @@
       <div>
         <div class="form-field">
           <label>Company Name</label>
-          <input type="text" placeholder="Your company name">
+          <input type="text" id="partnerCompany" placeholder="Your company name">
         </div>
         <div class="form-field">
           <label>Contact Person</label>
-          <input type="text" placeholder="Full name">
+          <input type="text" id="partnerContact" placeholder="Full name">
         </div>
         <div class="form-field">
           <label>Email</label>
-          <input type="email" placeholder="business@email.com">
+          <input type="email" id="partnerEmail" placeholder="business@email.com">
         </div>
         <div class="form-field">
           <label>Partnership Interest</label>
-          <select>
-            <option>Bronze Partnership</option>
-            <option>Silver Partnership</option>
-            <option>Gold Partnership</option>
-            <option>Platinum Partnership</option>
-            <option>Custom Package</option>
+          <select id="partnerInterest">
+            <option value="">Select a package...</option>
           </select>
         </div>
-        <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitForm()">Send Partnership Inquiry</button>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitPartnershipForm()">Send Partnership Inquiry</button>
       </div>
     </div>
   </div>
@@ -1003,24 +1003,24 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div class="form-field">
             <label>First Name</label>
-            <input type="text" placeholder="First name">
+            <input type="text" id="contactFirstName" placeholder="First name">
           </div>
           <div class="form-field">
             <label>Last Name</label>
-            <input type="text" placeholder="Last name">
+            <input type="text" id="contactLastName" placeholder="Last name">
           </div>
         </div>
         <div class="form-field">
           <label>Email Address</label>
-          <input type="email" placeholder="your@email.com">
+          <input type="email" id="contactEmail" placeholder="your@email.com">
         </div>
         <div class="form-field">
           <label>Phone Number</label>
-          <input type="tel" placeholder="+234 xxx xxxx xxx">
+          <input type="tel" id="contactPhone" placeholder="+234 xxx xxxx xxx">
         </div>
         <div class="form-field">
           <label>Subject</label>
-          <select>
+          <select id="contactSubject">
             <option>General Inquiry</option>
             <option>CESI Pageant</option>
             <option>CESI Models Registration</option>
@@ -1033,9 +1033,9 @@
         </div>
         <div class="form-field">
           <label>Message</label>
-          <textarea placeholder="Write your message here..." style="min-height:120px;"></textarea>
+          <textarea id="contactMessage" placeholder="Write your message here..." style="min-height:120px;"></textarea>
         </div>
-        <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitForm()">Send Message 📩</button>
+        <button class="btn btn-gold" style="width:100%;justify-content:center;" onclick="submitContactForm()">Send Message 📩</button>
       </div>
     </div>
   </div>

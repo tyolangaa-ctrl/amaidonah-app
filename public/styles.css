@@ -343,6 +343,10 @@ section#home { display: block; }
   display: flex; align-items: center; justify-content: center;
   font-family: 'Playfair Display', serif; font-size: 3rem;
   font-weight: 900; color: var(--gold-light); letter-spacing: 2px;
+  overflow: hidden;
+}
+.team-avatar img {
+  width: 100%; height: 180px; object-fit: cover;
 }
 .team-info { padding: 1.5rem; }
 .team-info h4 { font-size: 1.05rem; color: var(--navy); margin-bottom: 4px; }
@@ -862,7 +866,7 @@ footer {
   .schedule-item { grid-template-columns: 1fr; gap: 6px; }
   .sched-date { display: flex; gap: 6px; align-items: baseline; }
 }
-/* MODAL - Blog Post */
+/* ── MODAL ── */
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999;
   display: none; align-items: center; justify-content: center; padding: 1rem;
@@ -878,25 +882,6 @@ footer {
   display: flex; gap: 10px; justify-content: flex-end;
   margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);
 }
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 18px; border-radius: 8px; font-size: 13px;
-  font-weight: 600; cursor: pointer; border: none;
-  transition: var(--transition); font-family: 'DM Sans', sans-serif;
-}
-.btn-gold { background: linear-gradient(135deg,var(--gold),var(--gold-light)); color: var(--navy); }
-.btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(200,148,58,0.4); }
-.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text-mid); }
-.btn-outline:hover { border-color: var(--gold); color: var(--gold); }
-.w-100 { width: 100%; }
-.mt-2 { margin-top: 0.5rem; }
-
-/* MODAL - Blog Post */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 9999; display: none; align-items: center; justify-content: center; padding: 1rem; }
-.modal-overlay.open { display: flex; }
-.modal { background: var(--white); border-radius: var(--r-lg); padding: 2rem; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-.modal h3 { font-size: 1.3rem; color: var(--navy); margin-bottom: 1.5rem; }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); font-family: 'DM Sans', sans-serif; }
 .btn-gold { background: linear-gradient(135deg,var(--gold),var(--gold-light)); color: var(--navy); }
 .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(200,148,58,0.4); }
