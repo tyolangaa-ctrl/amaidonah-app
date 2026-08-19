@@ -32,9 +32,89 @@ function filterGallery(cat, btn) {
   });
 }
 
-function submitForm() {
-    
-  showNotif('Thank you! We\'ll be in touch within 24 hours. 🎉');
+function submitContactForm() {
+  const data = {
+    first_name: document.getElementById('contactFirstName').value,
+    last_name: document.getElementById('contactLastName').value,
+    email: document.getElementById('contactEmail').value,
+    phone: document.getElementById('contactPhone').value,
+    subject: document.getElementById('contactSubject').value,
+    message: document.getElementById('contactMessage').value
+  };
+  fetch('/api/submissions/contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json()).then(d => {
+    showNotif('Message sent successfully! We\'ll be in touch within 24 hours.');
+    document.getElementById('contactFirstName').value = '';
+    document.getElementById('contactLastName').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactPhone').value = '';
+    document.getElementById('contactMessage').value = '';
+  }).catch(() => showNotif('Something went wrong. Please try again.'));
+}
+
+function submitModelForm() {
+  const form = new FormData();
+  form.append('full_name', document.getElementById('modelName').value);
+  form.append('email', document.getElementById('modelEmail').value);
+  form.append('phone', document.getElementById('modelPhone').value);
+  form.append('age', document.getElementById('modelAge').value);
+  form.append('state', document.getElementById('modelState').value);
+  form.append('about', document.getElementById('modelAbout').value);
+  const photo = document.getElementById('modelPhoto').files[0];
+  if (photo) form.append('image', photo);
+  fetch('/api/submissions/models', {
+    method: 'POST',
+    body: form
+  }).then(r => r.json()).then(d => {
+    showNotif('Application submitted successfully! Good luck.');
+    document.getElementById('modelName').value = '';
+    document.getElementById('modelEmail').value = '';
+    document.getElementById('modelPhone').value = '';
+    document.getElementById('modelAge').value = '';
+    document.getElementById('modelState').value = '';
+    document.getElementById('modelAbout').value = '';
+    document.getElementById('modelPhoto').value = '';
+  }).catch(() => showNotif('Something went wrong. Please try again.'));
+}
+
+function submitPartnershipForm() {
+  const data = {
+    company_name: document.getElementById('partnerCompany').value,
+    contact_person: document.getElementById('partnerContact').value,
+    email: document.getElementById('partnerEmail').value,
+    package_interest: document.getElementById('partnerInterest').value
+  };
+  fetch('/api/submissions/partnerships', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(r => r.json()).then(d => {
+    showNotif('Partnership inquiry sent! We\'ll reach out soon.');
+    document.getElementById('partnerCompany').value = '';
+    document.getElementById('partnerContact').value = '';
+    document.getElementById('partnerEmail').value = '';
+    document.getElementById('partnerInterest').value = '';
+  }).catch(() => showNotif('Something went wrong. Please try again.'));
+}
+
+function loadPartnershipOptions() {
+  fetch('/api/sponsor_packages')
+    .then(r => r.json())
+    .then(pkgs => {
+      const sel = document.getElementById('partnerInterest');
+      if (!sel) return;
+      sel.innerHTML = '<option value="">Select a package...</option>';
+      const seen = {};
+      pkgs.forEach(p => {
+        if (seen[p.name]) return;
+        seen[p.name] = true;
+        sel.innerHTML += '<option value="' + p.name + '">' + p.name + ' — ' + p.price + '</option>';
+      });
+      sel.innerHTML += '<option value="Custom Package">Custom Package</option>';
+    });
 }
 
 function showNotif(msg) {
@@ -48,6 +128,8 @@ function showNotif(msg) {
 document.querySelectorAll('section').forEach(s => {
   if (s.id !== 'home') s.style.display = 'none';
 });
+
+loadPartnershipOptions();
 
 // Nav scroll effect
 window.addEventListener('scroll', () => {

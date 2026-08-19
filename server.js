@@ -323,12 +323,13 @@ app.get('/api/submissions/models', authMiddleware, async (req, res) => {
   }
 });
 
-app.post('/api/submissions/models', async (req, res) => {
+app.post('/api/submissions/models', upload.single('image'), async (req, res) => {
   try {
     const { full_name, email, phone, age, state, about } = req.body;
+    const image_url = req.file ? '/uploads/' + req.file.filename : null;
     await pool.query(
-      'INSERT INTO model_applications (full_name, email, phone, age, state, about) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-      [full_name, email, phone, age, state, about]
+      'INSERT INTO model_applications (full_name, email, phone, age, state, about, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *',
+      [full_name, email, phone, age, state, about, image_url]
     );
     res.status(201).json({ message: 'Application submitted' });
   } catch (err) {

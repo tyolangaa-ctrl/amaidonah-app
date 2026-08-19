@@ -573,7 +573,7 @@ async function renderSubmissions(table,title,apiPath){
         const date=new Date(item.created_at).toLocaleDateString();
         let details='';
         if(table==='contact_submissions') details=`<strong>${item.first_name} ${item.last_name}</strong><br>${item.email}<br>${item.phone||''}<br><em>${item.subject||''}</em>`;
-        else if(table==='model_applications') details=`<strong>${item.full_name}</strong><br>${item.email} · ${item.phone||''}<br>Age: ${item.age} · ${item.state||''}`;
+        else if(table==='model_applications') details=`<strong>${item.full_name}</strong><br>${item.email} · ${item.phone||''}<br>Age: ${item.age} · ${item.state||''}${item.image_url?`<br><img src="${item.image_url}" style="width:48px;height:48px;border-radius:8px;object-fit:cover;margin-top:4px;">`:''}`;
         else details=`<strong>${item.company_name||''}</strong><br>${item.contact_person||''}<br>${item.email||''}<br><em>${item.interest||''}</em>`;
         html+=`<tr style="${!item.read?'background:rgba(200,148,58,0.04);':''}"><td>${i+1}</td><td>${date}</td><td>${details}</td><td>${item.read?'<span class="badge badge-success">Read</span>':'<span class="badge badge-warning">New</span>'}</td>`;
         html+=`<td>`;
