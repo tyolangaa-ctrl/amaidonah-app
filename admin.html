@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!-- ═══════════════════ ADMIN PANEL ══════════════ -->
+<div id="admin-panel">
+  <div class="admin-sidebar">
+    <div class="admin-logo">
+      <div class="logo-mark" style="width:36px;height:36px;font-size:1rem">A</div>
+      <div style="margin-top:10px"><div class="logo-text" style="font-size:.95rem">AUS Admin</div><div class="logo-sub">Dashboard</div></div>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-item active" onclick="switchPanel('dashboard',this)"><span class="admin-nav-icon">📊</span>Dashboard</div>
+      <div class="admin-nav-item" onclick="switchPanel('posts',this)"><span class="admin-nav-icon">📝</span>Blog Posts</div>
+      <div class="admin-nav-item" onclick="switchPanel('events-admin',this)"><span class="admin-nav-icon">📅</span>Events</div>
+      <div class="admin-nav-item" onclick="switchPanel('gallery-admin',this)"><span class="admin-nav-icon">🖼️</span>Gallery</div>
+      <div class="admin-nav-item" onclick="switchPanel('registrations',this)"><span class="admin-nav-icon">📋</span>Registrations</div>
+      <div class="admin-nav-item" onclick="switchPanel('messages',this)"><span class="admin-nav-icon">💬</span>Messages</div>
+    </nav>
+    <div style="padding:20px 24px;border-top:1px solid rgba(255,255,255,.1)">
+      <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center" onclick="closeAdmin()">← Exit Admin</button>
+    </div>
+  </div>
+  <div class="admin-main">
+    <div class="admin-topbar">
+      <h2 id="adminPanelTitle">Dashboard</h2>
+      <div style="display:flex;align-items:center;gap:12px;font-size:.85rem;color:var(--text-muted)">
+        <span>👤 Admin User</span>
+        <span>|</span>
+        <span id="adminDate"></span>
+      </div>
+    </div>
+    <div class="admin-content">
+      <!-- Dashboard -->
+      <div class="admin-panel-section active" id="dashboard">
+        <div class="admin-stats-row">
+          <div class="a-stat"><div class="num">3</div><div class="label">Published Posts</div></div>
+          <div class="a-stat"><div class="num">6</div><div class="label">Upcoming Events</div></div>
+          <div class="a-stat"><div class="num">12</div><div class="label">New Registrations</div></div>
+          <div class="a-stat"><div class="num">5</div><div class="label">Unread Messages</div></div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;padding:28px">
+          <h3 style="font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;margin-bottom:20px">Recent Activity</h3>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--off-white);border-radius:8px;font-size:.85rem"><span>📝</span><span>New blog post published: "CESI Models Graduate"</span><span style="margin-left:auto;color:var(--text-muted)">2h ago</span></div>
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--off-white);border-radius:8px;font-size:.85rem"><span>📋</span><span>3 new model registrations received</span><span style="margin-left:auto;color:var(--text-muted)">5h ago</span></div>
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--off-white);border-radius:8px;font-size:.85rem"><span>💬</span><span>New partnership inquiry from Tech Brand X</span><span style="margin-left:auto;color:var(--text-muted)">1d ago</span></div>
+            <div style="display:flex;align-items:center;gap:14px;padding:12px;background:var(--off-white);border-radius:8px;font-size:.85rem"><span>🖼️</span><span>5 new photos added to Gallery</span><span style="margin-left:auto;color:var(--text-muted)">2d ago</span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Blog Posts -->
+      <div class="admin-panel-section" id="posts">
+        <div class="post-form">
+          <h3>Create New Post</h3>
+          <div class="form-group"><label>Post Title</label><input type="text" placeholder="Enter post title..."></div>
+          <div class="form-row">
+            <div class="form-group"><label>Category</label><select><option>Announcement</option><option>Success Story</option><option>Education</option><option>Event Recap</option><option>News</option></select></div>
+            <div class="form-group"><label>Status</label><select><option>Draft</option><option>Published</option></select></div>
+          </div>
+          <div class="form-group"><label>Content</label><textarea style="min-height:160px" placeholder="Write your post content here..."></textarea></div>
+          <div style="display:flex;gap:12px">
+            <button class="btn btn-blue btn-sm" onclick="showToast('Post saved as draft!','success')">Save Draft</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Post published successfully!','success')">Publish Now</button>
+          </div>
+        </div>
+        <div class="posts-list">
+          <div class="posts-list-header"><span>Title</span><span>Category</span><span>Date</span><span>Status</span></div>
+          <div class="post-row"><span>CESI Pageant Edition 4 Coming Soon</span><span>Announcement</span><span>Jun 2025</span><span class="status-pill published">Published</span></div>
+          <div class="post-row"><span>CESI Models First Cohort Graduates</span><span>Success Story</span><span>May 2025</span><span class="status-pill published">Published</span></div>
+          <div class="post-row"><span>Why Cybersecurity Matters</span><span>Education</span><span>Apr 2025</span><span class="status-pill published">Published</span></div>
+          <div class="post-row"><span>Upcoming Tech Campaign 2025</span><span>News</span><span>—</span><span class="status-pill draft">Draft</span></div>
+        </div>
+      </div>
+      <!-- Events Admin -->
+      <div class="admin-panel-section" id="events-admin">
+        <div class="post-form">
+          <h3>Add New Event</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Event Name</label><input type="text" placeholder="Event title..."></div>
+            <div class="form-group"><label>Event Date</label><input type="date"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Location</label><input type="text" placeholder="City, State"></div>
+            <div class="form-group"><label>Category</label><select><option>Pageant</option><option>Workshop</option><option>Fashion Show</option><option>Outreach</option><option>Other</option></select></div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea placeholder="Event details..."></textarea></div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Event added successfully!','success')">Add Event</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:.88rem">Manage and update your events. Active events appear on the website automatically.</p>
+      </div>
+      <!-- Gallery Admin -->
+      <div class="admin-panel-section" id="gallery-admin">
+        <div class="post-form">
+          <h3>Upload Gallery Media</h3>
+          <div class="form-group"><label>Media Caption</label><input type="text" placeholder="Describe this photo or video..."></div>
+          <div class="form-row">
+            <div class="form-group"><label>Category</label><select><option>Events</option><option>Fashion</option><option>Training</option><option>Outreach</option></select></div>
+            <div class="form-group"><label>Type</label><select><option>Photo</option><option>Video</option></select></div>
+          </div>
+          <div class="form-group"><label>Upload File</label><input type="file" accept="image/*,video/*" style="background:var(--off-white);padding:10px"></div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Media uploaded successfully!','success')">Upload Media</button>
+        </div>
+      </div>
+      <!-- Registrations -->
+      <div class="admin-panel-section" id="registrations">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <div style="padding:20px 24px;background:var(--off-white);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:20px">
+            <span>Name</span><span>Program</span><span>Date</span><span>Action</span>
+          </div>
+          <div style="padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:20px;align-items:center;font-size:.88rem"><span>Jane Doe</span><span>CESI Models</span><span>Jun 5, 2025</span><button class="btn btn-blue btn-sm">View</button></div>
+          <div style="padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:20px;align-items:center;font-size:.88rem"><span>Amaka N.</span><span>CESI Pageant</span><span>Jun 3, 2025</span><button class="btn btn-blue btn-sm">View</button></div>
+          <div style="padding:16px 24px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:20px;align-items:center;font-size:.88rem"><span>Chioma E.</span><span>CESI Models</span><span>Jun 1, 2025</span><button class="btn btn-blue btn-sm">View</button></div>
+        </div>
+      </div>
+      <!-- Messages -->
+      <div class="admin-panel-section" id="messages">
+        <div style="background:var(--white);border:1px solid var(--border);border-radius:14px;overflow:hidden">
+          <div style="padding:20px 24px;background:var(--off-white);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)">Inbox (5 unread)</div>
+          <div style="padding:20px 24px;border-top:1px solid var(--border)">
+            <div style="font-weight:600;font-size:.9rem;margin-bottom:4px">Partnership Inquiry — Tech Brand X</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">We are interested in sponsoring the CESI Pageant Edition 4...</div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-top:8px">Jun 6, 2025 · <span style="color:var(--gold)">Unread</span></div>
+          </div>
+          <div style="padding:20px 24px;border-top:1px solid var(--border)">
+            <div style="font-weight:600;font-size:.9rem;margin-bottom:4px">General Inquiry — Model Registration</div>
+            <div style="font-size:.82rem;color:var(--text-muted)">Hello, I would like to know more about the CESI Models program...</div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-top:8px">Jun 5, 2025 · <span style="color:var(--gold)">Unread</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Registration Modal -->
+<div id="regModal" style="display:none;position:fixed;inset:0;z-index:1500;background:rgba(10,22,40,.85);align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--white);border-radius:20px;padding:40px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative">
+    <button onclick="closeReg()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted)">✕</button>
+    <span class="tag">Application Form</span>
+    <h2 style="margin:10px 0 6px;font-size:1.8rem">CESI Models</h2>
+    <p style="margin-bottom:24px;font-size:.88rem">Fill in the form below to apply for the CESI Models training program.</p>
+    <div class="form-row"><div class="form-group"><label>First Name</label><input type="text" placeholder="First name"></div><div class="form-group"><label>Last Name</label><input type="text" placeholder="Last name"></div></div>
+    <div class="form-group"><label>Email Address</label><input type="email" placeholder="your@email.com"></div>
+    <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+234..."></div>
+    <div class="form-row"><div class="form-group"><label>Age</label><input type="number" placeholder="Age" min="14" max="30"></div><div class="form-group"><label>State of Origin</label><input type="text" placeholder="State"></div></div>
+    <div class="form-group"><label>Height (cm)</label><input type="number" placeholder="e.g. 170"></div>
+    <div class="form-group"><label>Why do you want to join CESI Models?</label><textarea placeholder="Tell us about yourself and your modeling goals..."></textarea></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="submitReg()">Submit Application →</button>
+  </div>
+</div>
+</body>
+</html>

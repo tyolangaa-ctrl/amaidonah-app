@@ -108,6 +108,15 @@ nav {
 }
 .nav-cta:hover { opacity: 0.9; transform: translateY(-1px); }
 
+.nav-cta1 {
+  /* padding: 9px !important; */
+  background: linear-gradient(135deg, var(--gold), var(--gold-light)) !important;
+  color: var(--navy) !important; 
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  width: 25px;
+}
+
 .nav-hamburger {
   display: none; flex-direction: column; gap: 5px;
   cursor: pointer; background: none; border: none; padding: 4px;

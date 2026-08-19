@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUS Admin Dashboard – Amaidonah Universal Solutions Ltd</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════
+   ROOT VARIABLES
+════════════════════════════════════ */
+:root {
+  --navy:       #0a1628;
+  --blue:       #1a3a6b;
+  --blue-mid:   #2155a3;
+  --blue-light: #3a7bd5;
+  --gold:       #c9980a;
+  --gold-light: #e8b923;
+  --gold-pale:  #fdf3d0;
+  --white:      #ffffff;
+  --off-white:  #f5f6fa;
+  --sidebar-bg: #0d1f3c;
+  --sidebar-hover: rgba(255,255,255,.07);
+  --text:       #1a1a2e;
+  --text-muted: #6b7280;
+  --border:     #e5e7eb;
+  --success:    #059669;
+  --warning:    #d97706;
+  --danger:     #dc2626;
+  --info:       #2155a3;
+  --radius:     10px;
+  --shadow:     0 2px 12px rgba(10,22,40,.09);
+  --shadow-lg:  0 8px 32px rgba(10,22,40,.15);
+}
+
+/* ════════════════════════════════════
+   RESET & BASE
+════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body { font-family: 'DM Sans', sans-serif; background: var(--off-white); color: var(--text); overflow: hidden; height: 100vh; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+input, select, textarea, button { font-family: 'DM Sans', sans-serif; }
+h1,h2,h3,h4 { line-height: 1.2; }
+
+/* ════════════════════════════════════
+   LOGIN SCREEN
+════════════════════════════════════ */
+#loginScreen {
+  position: fixed; inset: 0; z-index: 9999;
+  background: linear-gradient(150deg, var(--navy) 0%, var(--blue) 60%, #0d2244 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+#loginScreen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(201,152,10,.1) 0%, transparent 55%),
+                    radial-gradient(circle at 80% 20%, rgba(58,123,213,.15) 0%, transparent 50%);
+}
+.login-box {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,.06);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 20px;
+  padding: 48px 44px;
+  width: 100%; max-width: 420px;
+  box-shadow: var(--shadow-lg);
+}
+.login-logo {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 36px;
+}
+.logo-mark {
+  width: 48px; height: 48px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--navy);
+  flex-shrink: 0;
+}
+.login-logo-text { color: var(--white); }
+.login-logo-text strong { display: block; font-size: 1.15rem; font-family: 'Cormorant Garamond', serif; }
+.login-logo-text span { font-size: .7rem; color: var(--gold-light); letter-spacing: .1em; text-transform: uppercase; }
+.login-box h2 { color: var(--white); font-size: 1.55rem; margin-bottom: 6px; font-family: 'Cormorant Garamond', serif; }
+.login-box > p { color: rgba(255,255,255,.55); font-size: .85rem; margin-bottom: 28px; }
+.login-field { margin-bottom: 18px; }
+.login-field label { display: block; font-size: .8rem; font-weight: 600; color: rgba(255,255,255,.7); margin-bottom: 7px; }
+.login-field input {
+  width: 100%; padding: 12px 16px;
+  background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 8px; color: var(--white); font-size: .9rem; outline: none;
+  transition: border-color .2s;
+}
+.login-field input:focus { border-color: var(--gold); background: rgba(255,255,255,.11); }
+.login-field input::placeholder { color: rgba(255,255,255,.3); }
+.login-error {
+  display: none; background: rgba(220,38,38,.15); border: 1px solid rgba(220,38,38,.3);
+  color: #fca5a5; font-size: .82rem; padding: 10px 14px; border-radius: 8px; margin-bottom: 14px;
+}
+.login-error.show { display: block; }
+.btn-login {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy); font-weight: 700; font-size: .95rem;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: all .25s; margin-top: 4px;
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,152,10,.35); }
+.login-hint { text-align: center; margin-top: 20px; font-size: .78rem; color: rgba(255,255,255,.35); }
+.login-hint strong { color: rgba(255,255,255,.55); }
+
+/* ════════════════════════════════════
+   MAIN LAYOUT
+════════════════════════════════════ */
+#appShell { display: none; height: 100vh; overflow: hidden; }
+#appShell.visible { display: flex; }
+
+/* ════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════ */
+.sidebar {
+  width: 248px; min-width: 248px;
+  background: var(--sidebar-bg);
+  display: flex; flex-direction: column;
+  height: 100vh; overflow-y: auto;
+  transition: width .3s ease;
+  position: relative; z-index: 10;
+}
+.sidebar.collapsed { width: 64px; min-width: 64px; }
+.sidebar-header {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.07);
+  display: flex; align-items: center; gap: 12px;
+}
+.sidebar.collapsed .sidebar-brand { display: none; }
+.sidebar-brand strong { display: block; font-size: 1rem; color: var(--white); font-family: 'Cormorant Garamond', serif; }
+.sidebar-brand span { font-size: .62rem; color: var(--gold-light); letter-spacing: .1em; text-transform: uppercase; }
+.sidebar-toggle {
+  position: absolute; right: -13px; top: 28px;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--blue-mid); border: 2px solid var(--sidebar-bg);
+  color: var(--white); font-size: .75rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.sidebar-toggle:hover { background: var(--gold); color: var(--navy); }
+
+.sidebar-section { padding: 14px 0 4px; }
+.sidebar-section-label {
+  font-size: .62rem; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(255,255,255,.3);
+  padding: 0 20px 8px;
+  white-space: nowrap; overflow: hidden;
+}
+.sidebar.collapsed .sidebar-section-label { opacity: 0; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 13px;
+  padding: 10px 20px; cursor: pointer;
+  color: rgba(255,255,255,.6); font-size: .88rem; font-weight: 500;
+  transition: all .18s; border-left: 3px solid transparent;
+  white-space: nowrap; position: relative;
+}
+.nav-item:hover { color: var(--white); background: var(--sidebar-hover); }
+.nav-item.active {
+  color: var(--white); background: rgba(255,255,255,.09);
+  border-left-color: var(--gold);
+}
+.nav-icon { font-size: 1.05rem; min-width: 20px; text-align: center; }
+.nav-label { overflow: hidden; }
+.sidebar.collapsed .nav-label { display: none; }
+.nav-badge {
+  margin-left: auto; background: var(--gold);
+  color: var(--navy); font-size: .65rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px; min-width: 20px; text-align: center;
+}
+.sidebar.collapsed .nav-badge { display: none; }
+
+.sidebar-footer {
+  margin-top: auto; padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,.07);
+}
+.user-pill {
+  display: flex; align-items: center; gap: 11px;
+  background: rgba(255,255,255,.06); border-radius: 10px;
+  padding: 10px 14px; cursor: pointer; transition: all .2s;
+}
+.user-pill:hover { background: rgba(255,255,255,.1); }
+.user-av {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: .85rem; color: var(--navy); flex-shrink: 0;
+}
+.user-info { overflow: hidden; }
+.user-info strong { display: block; font-size: .82rem; color: var(--white); white-space: nowrap; }
+.user-info span { font-size: .7rem; color: rgba(255,255,255,.4); }
+.sidebar.collapsed .user-info { display: none; }
+.logout-btn {
+  width: 100%; margin-top: 10px; padding: 9px;
+  background: rgba(220,38,38,.15); border: 1px solid rgba(220,38,38,.3);
+  color: #fca5a5; border-radius: 8px; cursor: pointer; font-size: .82rem;
+  font-family: 'DM Sans', sans-serif; transition: all .2s;
+}
+.logout-btn:hover { background: rgba(220,38,38,.25); }
+.sidebar.collapsed .logout-btn { display: none; }
+
+/* ════════════════════════════════════
+   MAIN CONTENT AREA
+════════════════════════════════════ */
+.main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+/* ── Topbar ── */
+.topbar {
+  background: var(--white); border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; box-shadow: var(--shadow);
+}
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.topbar-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+.breadcrumb { font-size: .78rem; color: var(--text-muted); }
+.breadcrumb span { color: var(--gold); font-weight: 600; }
+.topbar-right { display: flex; align-items: center; gap: 14px; }
+.topbar-date { font-size: .78rem; color: var(--text-muted); }
+.notif-btn {
+  position: relative; width: 36px; height: 36px; border-radius: 9px;
+  background: var(--off-white); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; transition: all .2s;
+}
+.notif-btn:hover { background: var(--gold-pale); border-color: var(--gold); }
+.notif-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 8px; height: 8px; background: var(--danger); border-radius: 50%;
+  border: 2px solid var(--white);
+}
+.site-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 8px 16px; border-radius: 8px;
+  background: var(--blue-mid); color: var(--white);
+  font-size: .82rem; font-weight: 600; border: none; cursor: pointer;
+  transition: all .2s;
+}
+.site-btn:hover { background: var(--blue); transform: translateY(-1px); }
+
+/* ── Content Panels ── */
+.content-area { flex: 1; overflow-y: auto; padding: 28px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ════════════════════════════════════
+   COMPONENTS
+════════════════════════════════════ */
+
+/* Cards */
+.card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow); margin-bottom: 24px;
+}
+.card-title {
+  font-size: .82rem; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 18px;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.card-header h3 { font-size: 1rem; font-weight: 700; font-family: 'DM Sans', sans-serif; }
+
+/* Stat Cards */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px 20px;
+  box-shadow: var(--shadow); position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+}
+.stat-card.blue::before  { background: var(--blue-mid); }
+.stat-card.gold::before  { background: var(--gold); }
+.stat-card.green::before { background: var(--success); }
+.stat-card.red::before   { background: var(--danger); }
+.stat-icon { font-size: 1.6rem; margin-bottom: 12px; }
+.stat-num { font-size: 2.1rem; font-weight: 700; font-family: 'Cormorant Garamond', serif; line-height: 1; color: var(--text); }
+.stat-label { font-size: .75rem; color: var(--text-muted); margin-top: 5px; }
+.stat-change { font-size: .72rem; margin-top: 8px; font-weight: 600; }
+.stat-change.up   { color: var(--success); }
+.stat-change.down { color: var(--danger); }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+/* Table */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  text-align: left; font-size: .72rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); padding: 10px 16px;
+  background: var(--off-white); border-bottom: 1px solid var(--border);
+}
+.data-table td { padding: 13px 16px; border-bottom: 1px solid var(--border); font-size: .86rem; }
+.data-table tr:hover td { background: #fafbff; }
+.data-table tr:last-child td { border-bottom: none; }
+
+/* Badges / Pills */
+.pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: .7rem; font-weight: 700;
+}
+.pill-green  { background: #d1fae5; color: #065f46; }
+.pill-yellow { background: #fef3c7; color: #92400e; }
+.pill-blue   { background: #dbeafe; color: #1e40af; }
+.pill-red    { background: #fee2e2; color: #991b1b; }
+.pill-gold   { background: var(--gold-pale); color: #7c5d00; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: 8px; font-size: .84rem;
+  font-weight: 600; cursor: pointer; border: none; transition: all .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-primary  { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: var(--navy); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(201,152,10,.3); }
+.btn-blue     { background: var(--blue-mid); color: var(--white); }
+.btn-blue:hover { background: var(--blue); }
+.btn-outline  { background: transparent; border: 1.5px solid var(--border); color: var(--text-muted); }
+.btn-outline:hover { border-color: var(--blue-mid); color: var(--blue-mid); }
+.btn-danger   { background: var(--danger); color: var(--white); }
+.btn-danger:hover { background: #b91c1c; }
+.btn-success  { background: var(--success); color: var(--white); }
+.btn-sm { padding: 6px 13px; font-size: .78rem; }
+.btn-xs { padding: 4px 10px; font-size: .72rem; }
+.btn-full { width: 100%; justify-content: center; }
+.btn-icon { width: 32px; height: 32px; padding: 0; justify-content: center; border-radius: 7px; }
+
+/* Forms */
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: .79rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-size: .88rem; color: var(--text);
+  background: var(--off-white); outline: none; transition: border-color .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus { border-color: var(--blue-mid); background: var(--white); }
+.form-group textarea { resize: vertical; min-height: 100px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.form-actions { display: flex; gap: 10px; margin-top: 4px; }
+.form-hint { font-size: .74rem; color: var(--text-muted); margin-top: 4px; }
+
+/* Search bar */
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--off-white); border: 1.5px solid var(--border);
+  border-radius: 8px; padding: 8px 14px; transition: border-color .2s;
+}
+.search-bar:focus-within { border-color: var(--blue-mid); background: var(--white); }
+.search-bar input { background: none; border: none; outline: none; font-size: .88rem; flex: 1; color: var(--text); }
+.search-bar input::placeholder { color: var(--text-muted); }
+
+/* Toolbar row */
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+.toolbar-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+.toolbar-right { display: flex; gap: 10px; flex-shrink: 0; }
+
+/* Tabs */
+.tab-row { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 2px solid var(--border); }
+.tab {
+  padding: 9px 18px; font-size: .84rem; font-weight: 600;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; color: var(--text-muted); transition: all .2s;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: 'DM Sans', sans-serif;
+}
+.tab:hover { color: var(--blue-mid); }
+.tab.active { color: var(--blue-mid); border-bottom-color: var(--blue-mid); }
+
+/* Activity feed */
+.activity-feed { display: flex; flex-direction: column; gap: 0; }
+.activity-item {
+  display: flex; align-items: flex-start; gap: 13px;
+  padding: 14px 0; border-bottom: 1px solid var(--border); font-size: .85rem;
+}
+.activity-item:last-child { border-bottom: none; }
+.a-dot {
+  width: 34px; height: 34px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; flex-shrink: 0;
+}
+.a-dot.blue { background: #dbeafe; }
+.a-dot.gold { background: var(--gold-pale); }
+.a-dot.green { background: #d1fae5; }
+.a-dot.red { background: #fee2e2; }
+.a-text { flex: 1; }
+.a-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
+.a-text span { color: var(--text-muted); font-size: .78rem; }
+.a-time { font-size: .74rem; color: var(--text-muted); white-space: nowrap; }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+
+/* Inline avatar */
+.av-sm {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-mid), var(--gold));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: var(--white); flex-shrink: 0;
+}
+
+/* Toggle Switch */
+.toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.toggle-track {
+  width: 40px; height: 22px; border-radius: 11px;
+  background: var(--border); position: relative; transition: background .2s;
+}
+.toggle-track.on { background: var(--success); }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--white); transition: left .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.toggle-track.on .toggle-thumb { left: 21px; }
+.toggle-label { font-size: .84rem; font-weight: 500; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  padding: 13px 20px; border-radius: 10px;
+  font-size: .86rem; font-weight: 500; z-index: 9999;
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(60px); opacity: 0;
+  transition: all .3s ease; min-width: 260px;
+  box-shadow: var(--shadow-lg);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { background: var(--success); color: var(--white); }
+.toast.error   { background: var(--danger);  color: var(--white); }
+.toast.info    { background: var(--blue-mid); color: var(--white); }
+.toast.warning { background: var(--warning); color: var(--white); }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(10,22,40,.7); align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--white); border-radius: 16px; padding: 36px;
+  width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto;
+  position: relative; box-shadow: var(--shadow-lg);
+}
+.modal-title { font-size: 1.3rem; margin-bottom: 6px; }
+.modal-sub { font-size: .85rem; color: var(--text-muted); margin-bottom: 24px; }
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: var(--off-white); border: 1px solid var(--border);
+  width: 32px; height: 32px; border-radius: 50%;
+  font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); transition: all .2s;
+}
+.modal-close:hover { background: var(--danger); color: var(--white); border-color: var(--danger); }
+
+/* ════════════════════════════════════
+   DASHBOARD PANEL
+════════════════════════════════════ */
+.mini-chart {
+  display: flex; align-items: flex-end; gap: 5px;
+  height: 60px; margin-top: 14px;
+}
+.mini-bar {
+  flex: 1; border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, var(--blue-mid), var(--blue-light));
+  transition: all .3s;
+}
+.mini-bar:hover { background: linear-gradient(to top, var(--gold), var(--gold-light)); }
+.mini-bar.gold { background: linear-gradient(to top, var(--gold), var(--gold-light)); }
+.chart-labels { display: flex; gap: 5px; margin-top: 5px; }
+.chart-label { flex: 1; text-align: center; font-size: .65rem; color: var(--text-muted); }
+
+.quick-actions { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+.qa-btn {
+  background: var(--off-white); border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 16px 12px; text-align: center; cursor: pointer; transition: all .2s;
+}
+.qa-btn:hover { border-color: var(--blue-mid); background: #f0f4ff; transform: translateY(-2px); }
+.qa-icon { font-size: 1.5rem; margin-bottom: 7px; }
+.qa-label { font-size: .75rem; font-weight: 600; color: var(--text); }
+
+/* ════════════════════════════════════
+   GALLERY PANEL
+════════════════════════════════════ */
+.gallery-grid-admin { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.gallery-thumb-admin {
+  border-radius: 10px; overflow: hidden; position: relative;
+  border: 2px solid transparent; cursor: pointer; transition: all .2s;
+}
+.gallery-thumb-admin:hover { border-color: var(--blue-mid); }
+.gallery-thumb-admin.selected { border-color: var(--gold); }
+.gallery-img {
+  width: 100%; aspect-ratio: 1; object-fit: cover;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem;
+}
+.g1 { background: linear-gradient(135deg,#1a3a6b,#2155a3); }
+.g2 { background: linear-gradient(135deg,#c9980a,#e8b923); }
+.g3 { background: linear-gradient(135deg,#0a1628,#3a7bd5); }
+.g4 { background: linear-gradient(135deg,#2155a3,#c9980a); }
+.g5 { background: linear-gradient(135deg,#e8b923,#1a3a6b); }
+.g6 { background: linear-gradient(135deg,#3a7bd5,#0a1628); }
+.g7 { background: linear-gradient(135deg,#c9980a,#3a7bd5); }
+.g8 { background: linear-gradient(135deg,#0a1628,#e8b923); }
+.gallery-thumb-admin .gal-actions {
+  position: absolute; inset: 0;
+  background: rgba(10,22,40,.6);
+  opacity: 0; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: opacity .2s;
+}
+.gallery-thumb-admin:hover .gal-actions { opacity: 1; }
+
+/* ════════════════════════════════════
+   CONTESTANTS (Voting) PANEL
+════════════════════════════════════ */
+.contestant-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.contestant-card {
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px 18px; text-align: center;
+  transition: all .2s; box-shadow: var(--shadow);
+}
+.contestant-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-3px); }
+.contestant-avatar {
+  width: 72px; height: 72px; border-radius: 50%; margin: 0 auto 13px;
+  background: linear-gradient(135deg, var(--gold), var(--blue-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem; border: 3px solid var(--gold-pale);
+}
+.contestant-num { font-size: .68rem; color: var(--gold); font-weight: 700; letter-spacing: .1em; margin-bottom: 3px; }
+.contestant-name { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+.contestant-cat { font-size: .75rem; color: var(--text-muted); margin-bottom: 12px; }
+.vote-bar-wrap { margin: 10px 0 6px; }
+.vote-count { font-size: .78rem; color: var(--text-muted); }
+
+/* ════════════════════════════════════
+   SETTINGS PANEL
+════════════════════════════════════ */
+.settings-section { margin-bottom: 28px; }
+.settings-section h3 {
+  font-size: .88rem; font-weight: 700; color: var(--text);
+  margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-info strong { display: block; font-size: .86rem; font-weight: 600; margin-bottom: 2px; }
+.setting-info span { font-size: .78rem; color: var(--text-muted); }
+
+/* ════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .gallery-grid-admin { grid-template-columns: repeat(3, 1fr); }
+  .contestant-grid { grid-template-columns: repeat(2, 1fr); }
+  .quick-actions { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -248px; z-index: 100; transition: left .3s; }
+  .sidebar.mobile-open { left: 0; }
+  .sidebar.collapsed { width: 248px; left: -248px; }
+  .sidebar.collapsed.mobile-open { left: 0; width: 248px; }
+  .sidebar.collapsed .sidebar-brand,
+  .sidebar.collapsed .nav-label,
+  .sidebar.collapsed .sidebar-section-label,
+  .sidebar.collapsed .nav-badge,
+  .sidebar.collapsed .user-info,
+  .sidebar.collapsed .logout-btn { display: block; }
+  .grid-2, .form-row { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .gallery-grid-admin { grid-template-columns: repeat(2, 1fr); }
+  .contestant-grid { grid-template-columns: 1fr; }
+  .mobile-menu-btn { display: flex !important; }
+}
+
+.mobile-menu-btn {
+  display: none; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--off-white); border: 1px solid var(--border);
+  cursor: pointer; font-size: 1.1rem;
+}
+.mobile-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.4); z-index: 99;
+}
+.mobile-overlay.show { display: block; }
+
+/* Upload zone */
+.upload-zone {
+  border: 2px dashed var(--border); border-radius: 10px;
+  padding: 36px 20px; text-align: center;
+  cursor: pointer; transition: all .2s; background: var(--off-white);
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--blue-mid); background: #f0f4ff; }
+.upload-zone .up-icon { font-size: 2rem; margin-bottom: 10px; }
+.upload-zone p { font-size: .84rem; color: var(--text-muted); }
+.upload-zone strong { color: var(--blue-mid); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-mark">A</div>
+      <div class="login-logo-text">
+        <strong>AUS Admin Portal</strong>
+        <span>Amaidonah Universal Solutions Ltd</span>
+      </div>
+    </div>
+    <h2>Welcome Back</h2>
+    <p>Sign in to manage your website content, events, and programs.</p>
+    <div class="login-error" id="loginError">❌ Incorrect username or password. Please try again.</div>
+    <div class="login-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Sign In to Dashboard</button>
+    <div class="login-hint">Demo credentials: <strong>admin</strong> / <strong>aus2025</strong></div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SHELL ═══════════════ -->
+<div id="appShell">
+
+  <!-- Mobile sidebar overlay -->
+  <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()"></div>
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark" style="width:38px;height:38px;font-size:1.1rem;flex-shrink:0">A</div>
+      <div class="sidebar-brand">
+        <strong>AUS Admin</strong>
+        <span>Management Portal</span>
+      </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="toggleSidebar()" title="Collapse sidebar">◀</button>
+
+    <nav>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <div class="nav-item active" onclick="showPanel('dashboard',this)">
+          <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Content</div>
+        <div class="nav-item" onclick="showPanel('blog',this)">
+          <span class="nav-icon">📝</span><span class="nav-label">Blog & News</span>
+          <span class="nav-badge">2</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('gallery',this)">
+          <span class="nav-icon">🖼️</span><span class="nav-label">Gallery</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('events',this)">
+          <span class="nav-icon">📅</span><span class="nav-label">Events</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('services',this)">
+          <span class="nav-icon">⚙️</span><span class="nav-label">Services</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Programs</div>
+        <div class="nav-item" onclick="showPanel('pageant',this)">
+          <span class="nav-icon">👑</span><span class="nav-label">CESI Pageant</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('contestants',this)">
+          <span class="nav-icon">🗳️</span><span class="nav-label">Contestants & Voting</span>
+          <span class="nav-badge">New</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('models',this)">
+          <span class="nav-icon">👗</span><span class="nav-label">CESI Models</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">People</div>
+        <div class="nav-item" onclick="showPanel('team',this)">
+          <span class="nav-icon">👥</span><span class="nav-label">Leadership Team</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('registrations',this)">
+          <span class="nav-icon">📋</span><span class="nav-label">Registrations</span>
+          <span class="nav-badge">12</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('sponsors',this)">
+          <span class="nav-icon">🤝</span><span class="nav-label">Sponsors</span>
+        </div>
+        <div class="nav-item" onclick="showPanel('messages',this)">
+          <span class="nav-icon">💬</span><span class="nav-label">Messages</span>
+          <span class="nav-badge">5</span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">System</div>
+        <div class="nav-item" onclick="showPanel('settings',this)">
+          <span class="nav-icon">🔧</span><span class="nav-label">Settings</span>
+        </div>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <div class="user-av">A</div>
+        <div class="user-info">
+          <strong>Admin User</strong>
+          <span>Super Administrator</span>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">🔓 Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- ── MAIN AREA ── -->
+  <div class="main-area">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" onclick="openMobileSidebar()">☰</button>
+        <div>
+          <div class="topbar-title" id="topbarTitle">Dashboard</div>
+          <div class="breadcrumb">AUS Admin &rsaquo; <span id="topbarCrumb">Overview</span></div>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-date" id="topbarDate"></div>
+        <button class="notif-btn" title="Notifications"><span>🔔</span><span class="notif-dot"></span></button>
+        <button class="site-btn" onclick="window.open('index.html','_blank')">🌐 View Website</button>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area">
+
+      <!-- ════════ DASHBOARD ════════ -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row">
+          <div class="stat-card blue">
+            <div class="stat-icon">📝</div>
+            <div class="stat-num">3</div>
+            <div class="stat-label">Published Posts</div>
+            <div class="stat-change up">↑ 1 this week</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-icon">📅</div>
+            <div class="stat-num">6</div>
+            <div class="stat-label">Active Events</div>
+            <div class="stat-change up">↑ 2 upcoming</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-icon">📋</div>
+            <div class="stat-num">47</div>
+            <div class="stat-label">Total Registrations</div>
+            <div class="stat-change up">↑ 12 this month</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-icon">💬</div>
+            <div class="stat-num">5</div>
+            <div class="stat-label">Unread Messages</div>
+            <div class="stat-change down">Needs attention</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <!-- Activity -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Recent Activity</h3>
+              <button class="btn btn-outline btn-sm">View All</button>
+            </div>
+            <div class="activity-feed">
+              <div class="activity-item">
+                <div class="a-dot blue">📝</div>
+                <div class="a-text"><strong>New blog post published</strong><span>"CESI Models Graduate Their First Cohort"</span></div>
+                <div class="a-time">2h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="a-dot green">📋</div>
+                <div class="a-text"><strong>3 new model registrations</strong><span>Jane Doe, Amaka N., Chioma E.</span></div>
+                <div class="a-time">5h ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="a-dot gold">🤝</div>
+                <div class="a-text"><strong>Partnership inquiry received</strong><span>Tech Brand X — Gold Sponsorship interest</span></div>
+                <div class="a-time">1d ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="a-dot blue">🖼️</div>
+                <div class="a-text"><strong>5 photos added to gallery</strong><span>CESI Fashion Show 2024 album</span></div>
+                <div class="a-time">2d ago</div>
+              </div>
+              <div class="activity-item">
+                <div class="a-dot gold">👑</div>
+                <div class="a-text"><strong>Pageant winner updated</strong><span>Miss CESI 2024 profile published</span></div>
+                <div class="a-time">3d ago</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3>Registrations This Month</h3>
+              <span class="pill pill-green">+28%</span>
+            </div>
+            <div class="mini-chart" id="miniChart"></div>
+            <div class="chart-labels" id="chartLabels"></div>
+            <div style="margin-top:18px;display:flex;gap:20px;font-size:.78rem">
+              <div><strong style="color:var(--blue-mid)">23</strong> <span style="color:var(--text-muted)">CESI Models</span></div>
+              <div><strong style="color:var(--gold)">14</strong> <span style="color:var(--text-muted)">Pageant</span></div>
+              <div><strong style="color:var(--success)">10</strong> <span style="color:var(--text-muted)">General</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card">
+          <div class="card-title">Quick Actions</div>
+          <div class="quick-actions">
+            <div class="qa-btn" onclick="showPanel('blog', document.querySelector('[onclick*=blog]'))">
+              <div class="qa-icon">📝</div><div class="qa-label">New Blog Post</div>
+            </div>
+            <div class="qa-btn" onclick="showPanel('gallery', document.querySelector('[onclick*=gallery]'))">
+              <div class="qa-icon">📸</div><div class="qa-label">Upload Photos</div>
+            </div>
+            <div class="qa-btn" onclick="showPanel('contestants', document.querySelector('[onclick*=contestants]'))">
+              <div class="qa-icon">🗳️</div><div class="qa-label">Manage Voting</div>
+            </div>
+            <div class="qa-btn" onclick="showPanel('events', document.querySelector('[onclick*=events]'))">
+              <div class="qa-icon">📅</div><div class="qa-label">Add Event</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Program Overview -->
+        <div class="card">
+          <div class="card-header"><h3>Program Registration Status</h3></div>
+          <table class="data-table">
+            <thead><tr><th>Program</th><th>Registrations</th><th>Target</th><th>Progress</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>CESI Pageant Ed. 4</strong></td>
+                <td>0</td><td>30</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:0%;background:var(--gold)"></div></div></td>
+                <td><span class="pill pill-yellow">Opening Soon</span></td>
+              </tr>
+              <tr>
+                <td><strong>CESI Models 2025</strong></td>
+                <td>23</td><td>30</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:77%;background:var(--blue-mid)"></div></div></td>
+                <td><span class="pill pill-green">Open</span></td>
+              </tr>
+              <tr>
+                <td><strong>Tech Workshop – Aug</strong></td>
+                <td>41</td><td>50</td>
+                <td><div class="progress-bar"><div class="progress-fill" style="width:82%;background:var(--success)"></div></div></td>
+                <td><span class="pill pill-green">Open</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ BLOG & NEWS ════════ -->
+      <div class="panel" id="panel-blog">
+        <div class="tab-row">
+          <button class="tab active" onclick="switchTab(this,'blog-posts')">All Posts</button>
+          <button class="tab" onclick="switchTab(this,'blog-new')">New Post</button>
+        </div>
+
+        <div id="blog-posts">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <div class="search-bar" style="max-width:300px"><span>🔍</span><input type="text" placeholder="Search posts..."></div>
+              <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;background:var(--white)">
+                <option>All Categories</option>
+                <option>Announcement</option>
+                <option>Success Story</option>
+                <option>Education</option>
+                <option>Event Recap</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn btn-primary" onclick="switchTab(document.querySelectorAll('#panel-blog .tab')[1],'blog-new')">+ New Post</button>
+            </div>
+          </div>
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Title</th><th>Category</th><th>Author</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><strong>CESI Pageant Edition 4 Registration Opening Soon</strong></td>
+                  <td><span class="pill pill-blue">Announcement</span></td>
+                  <td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div>AUS Team</div></td>
+                  <td>Jun 2025</td>
+                  <td><span class="pill pill-green">Published</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Delete</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>CESI Models Graduate Their First Cohort</strong></td>
+                  <td><span class="pill pill-green">Success Story</span></td>
+                  <td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div>AUS Team</div></td>
+                  <td>May 2025</td>
+                  <td><span class="pill pill-green">Published</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Delete</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>Why Cybersecurity Matters for Nigerian Youth</strong></td>
+                  <td><span class="pill pill-gold">Education</span></td>
+                  <td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div>AUS Team</div></td>
+                  <td>Apr 2025</td>
+                  <td><span class="pill pill-green">Published</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Delete</button></div></td>
+                </tr>
+                <tr>
+                  <td><strong>Upcoming Tech Campaign 2025</strong></td>
+                  <td><span class="pill pill-blue">News</span></td>
+                  <td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div>AUS Team</div></td>
+                  <td>—</td>
+                  <td><span class="pill pill-yellow">Draft</span></td>
+                  <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-success btn-xs">Publish</button></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="blog-new" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Create New Post</h3></div>
+            <div class="form-group"><label>Post Title *</label><input type="text" placeholder="Enter an engaging title..."></div>
+            <div class="form-row">
+              <div class="form-group"><label>Category *</label>
+                <select><option>Announcement</option><option>Success Story</option><option>Education</option><option>Event Recap</option><option>News</option></select>
+              </div>
+              <div class="form-group"><label>Status</label>
+                <select><option>Draft</option><option>Published</option></select>
+              </div>
+            </div>
+            <div class="form-group"><label>Cover Image URL (or upload)</label><input type="text" placeholder="https://... or upload below"></div>
+            <div class="form-group"><label>Post Content *</label><textarea style="min-height:220px" placeholder="Write your full post content here...&#10;&#10;Tip: Use clear paragraphs, add bullet points, and keep language engaging and professional."></textarea></div>
+            <div class="form-group"><label>Tags (comma separated)</label><input type="text" placeholder="youth, CESI, technology, empowerment"></div>
+            <div class="form-actions">
+              <button class="btn btn-outline" onclick="showToast('Saved as draft!','info')">💾 Save Draft</button>
+              <button class="btn btn-primary" onclick="showToast('Post published successfully!','success')">🚀 Publish Now</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ GALLERY ════════ -->
+      <div class="panel" id="panel-gallery">
+        <div class="tab-row">
+          <button class="tab active" onclick="switchTab(this,'gal-view')">All Media</button>
+          <button class="tab" onclick="switchTab(this,'gal-upload')">Upload New</button>
+        </div>
+
+        <div id="gal-view">
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;background:var(--white)">
+                <option>All Categories</option><option>Events</option><option>Fashion</option><option>Training</option><option>Outreach</option>
+              </select>
+              <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;background:var(--white)">
+                <option>All Types</option><option>Photos</option><option>Videos</option>
+              </select>
+            </div>
+            <div class="toolbar-right">
+              <span style="font-size:.82rem;color:var(--text-muted)">8 items</span>
+              <button class="btn btn-primary" onclick="switchTab(document.querySelectorAll('#panel-gallery .tab')[1],'gal-upload')">+ Upload</button>
+            </div>
+          </div>
+          <div class="gallery-grid-admin">
+            <div class="gallery-thumb-admin"><div class="gallery-img g1">👑</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g2">👗</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g3">🎓</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g4">🌱</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g5">💄</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g6">🎪</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g7">📸</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+            <div class="gallery-thumb-admin"><div class="gallery-img g8">💡</div><div class="gal-actions"><button class="btn btn-outline btn-xs" style="background:rgba(255,255,255,.9)">Edit</button><button class="btn btn-danger btn-xs">Del</button></div></div>
+          </div>
+        </div>
+
+        <div id="gal-upload" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Upload Media</h3></div>
+            <div class="upload-zone" onclick="showToast('File picker opened (connect backend to enable real uploads)','info')"
+                 ondragover="this.classList.add('drag');event.preventDefault()"
+                 ondragleave="this.classList.remove('drag')"
+                 ondrop="this.classList.remove('drag');event.preventDefault();showToast('File dropped! Connect backend to save.','info')">
+              <div class="up-icon">📁</div>
+              <p><strong>Click to browse</strong> or drag and drop files here</p>
+              <p style="margin-top:6px;font-size:.76rem">Supports: JPG, PNG, GIF, MP4, WEBM — Max 20MB</p>
+            </div>
+            <div class="form-row" style="margin-top:18px">
+              <div class="form-group"><label>Caption / Description</label><input type="text" placeholder="Describe this media..."></div>
+              <div class="form-group"><label>Category</label><select><option>Events</option><option>Fashion</option><option>Training</option><option>Outreach</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Album / Tag</label><input type="text" placeholder="e.g. CESI Pageant 2024"></div>
+              <div class="form-group"><label>Media Type</label><select><option>Photo</option><option>Video</option></select></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" onclick="showToast('Upload complete! (Connect backend to save files)','success')">⬆️ Upload Media</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ EVENTS ════════ -->
+      <div class="panel" id="panel-events">
+        <div class="tab-row">
+          <button class="tab active" onclick="switchTab(this,'ev-list')">All Events</button>
+          <button class="tab" onclick="switchTab(this,'ev-new')">Add Event</button>
+        </div>
+        <div id="ev-list">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Event Name</th><th>Date</th><th>Location</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><strong>CESI Pageant Edition 4</strong></td><td>Dec 2025</td><td>Abuja</td><td><span class="pill pill-gold">Pageant</span></td><td><span class="pill pill-blue">Upcoming</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><strong>Tech Awareness Workshop</strong></td><td>Aug 2025</td><td>FCT Schools</td><td><span class="pill pill-blue">Workshop</span></td><td><span class="pill pill-blue">Upcoming</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><strong>CESI Fashion Show 2024</strong></td><td>Nov 2024</td><td>Abuja</td><td><span class="pill pill-gold">Fashion</span></td><td><span class="pill pill-green">Completed</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><strong>Cybersecurity Bootcamp</strong></td><td>Mar 2024</td><td>Abuja</td><td><span class="pill pill-blue">Workshop</span></td><td><span class="pill pill-green">Completed</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><strong>Community Empowerment Drive</strong></td><td>Ongoing</td><td>Multiple</td><td><span class="pill pill-green">Outreach</span></td><td><span class="pill pill-green">Active</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="ev-new" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Add New Event</h3></div>
+            <div class="form-group"><label>Event Name *</label><input type="text" placeholder="e.g. CESI Pageant Edition 5"></div>
+            <div class="form-row">
+              <div class="form-group"><label>Event Date *</label><input type="date"></div>
+              <div class="form-group"><label>End Date (if multi-day)</label><input type="date"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Location *</label><input type="text" placeholder="City, State / Venue name"></div>
+              <div class="form-group"><label>Category *</label><select><option>Pageant</option><option>Workshop</option><option>Fashion Show</option><option>Outreach</option><option>Bootcamp</option><option>Other</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Status</label><select><option>Upcoming</option><option>Active</option><option>Completed</option></select></div>
+              <div class="form-group"><label>Registration Link (optional)</label><input type="text" placeholder="https://..."></div>
+            </div>
+            <div class="form-group"><label>Description *</label><textarea placeholder="Describe the event..."></textarea></div>
+            <div class="form-group"><label>Cover Image URL</label><input type="text" placeholder="https://... or upload to assets/"></div>
+            <div class="form-actions">
+              <button class="btn btn-primary" onclick="showToast('Event added successfully!','success')">➕ Add Event</button>
+              <button class="btn btn-outline" onclick="showToast('Draft saved!','info')">Save Draft</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ SERVICES ════════ -->
+      <div class="panel" id="panel-services">
+        <div class="card">
+          <div class="card-header"><h3>Manage Services</h3><button class="btn btn-primary btn-sm" onclick="showToast('Service added!','success')">+ Add Service</button></div>
+          <table class="data-table">
+            <thead><tr><th>Icon</th><th>Service Name</th><th>Description</th><th>Visible</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td style="font-size:1.4rem">💻</td><td><strong>Technology Awareness</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Bridging the digital divide through workshops and seminars</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td style="font-size:1.4rem">🔒</td><td><strong>Cybersecurity Training</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Practical cybersecurity education for youth</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td style="font-size:1.4rem">🌟</td><td><strong>Youth Empowerment</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Mentorship and leadership training programs</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td style="font-size:1.4rem">🎪</td><td><strong>Event Management</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Professional planning and execution of events</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td style="font-size:1.4rem">📸</td><td><strong>Media &amp; Promotion</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Photography, videography, social media management</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td style="font-size:1.4rem">🏆</td><td><strong>Talent Development</strong></td><td style="max-width:280px;font-size:.8rem;color:var(--text-muted)">Runway coaching and creative arts development</td><td><span class="pill pill-green">Visible</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ CESI PAGEANT ════════ -->
+      <div class="panel" id="panel-pageant">
+        <div class="grid-2" style="margin-bottom:24px">
+          <div class="stat-card gold"><div class="stat-icon">👑</div><div class="stat-num">3</div><div class="stat-label">Editions Completed</div></div>
+          <div class="stat-card blue"><div class="stat-icon">🗓️</div><div class="stat-num">Dec 2025</div><div class="stat-label">Next Edition (Ed. 4)</div></div>
+        </div>
+        <div class="tab-row">
+          <button class="tab active" onclick="switchTab(this,'pg-winners')">Past Winners</button>
+          <button class="tab" onclick="switchTab(this,'pg-sponsors')">Sponsors</button>
+          <button class="tab" onclick="switchTab(this,'pg-add')">Add Winner</button>
+        </div>
+        <div id="pg-winners">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Photo</th><th>Name</th><th>Title</th><th>Edition / Year</th><th>Category</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div class="av-sm">👸</div></td><td><strong>Miss CESI 2024</strong></td><td>Community Champion</td><td>Edition 3 · 2024</td><td><span class="pill pill-gold">Miss CESI</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><div class="av-sm">👸</div></td><td><strong>Miss CESI 2023</strong></td><td>Innovation Queen</td><td>Edition 2 · 2023</td><td><span class="pill pill-gold">Miss CESI</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+                <tr><td><div class="av-sm">👸</div></td><td><strong>Miss CESI 2022</strong></td><td>Pioneer Queen</td><td>Edition 1 · 2022</td><td><span class="pill pill-gold">Miss CESI</span></td><td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="pg-sponsors" style="display:none">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Organization</th><th>Tier</th><th>Amount</th><th>Edition</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Sample Sponsor A</strong></td><td><span class="pill pill-gold">Gold</span></td><td>₦300,000</td><td>Edition 3</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+                <tr><td><strong>Sample Sponsor B</strong></td><td><span class="pill" style="background:#f3f3f3;color:#555">Silver</span></td><td>₦150,000</td><td>Edition 3</td><td><span class="pill pill-green">Confirmed</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="pg-add" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Add Pageant Winner</h3></div>
+            <div class="form-row">
+              <div class="form-group"><label>Winner's Full Name *</label><input type="text" placeholder="e.g. Amaka Okonkwo"></div>
+              <div class="form-group"><label>Title / Crown *</label><input type="text" placeholder="e.g. Miss CESI 2025"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Edition *</label><select><option>Edition 4 (2025)</option><option>Edition 3 (2024)</option></select></div>
+              <div class="form-group"><label>Category *</label><select><option>Miss CESI</option><option>Teen CESI</option><option>Mini CESI</option></select></div>
+            </div>
+            <div class="form-group"><label>Achievement / Tagline</label><input type="text" placeholder="e.g. Community Champion, Innovation Queen"></div>
+            <div class="form-group"><label>Photo (upload to assets/pageant/ first, then paste filename)</label><input type="text" placeholder="assets/pageant/winner-2025.jpg"></div>
+            <div class="form-group"><label>Bio / Description</label><textarea placeholder="Short bio about the winner..."></textarea></div>
+            <div class="form-actions">
+              <button class="btn btn-primary" onclick="showToast('Winner profile added!','success')">👑 Save Winner</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ CONTESTANTS & VOTING ════════ -->
+      <div class="panel" id="panel-contestants">
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <h3>🗳️ Online Voting System</h3>
+            <div style="display:flex;align-items:center;gap:14px">
+              <label class="toggle" onclick="toggleVoting(this)">
+                <div class="toggle-track" id="votingTrack">
+                  <div class="toggle-thumb"></div>
+                </div>
+                <span class="toggle-label" id="votingLabel">Voting: OFF</span>
+              </label>
+              <button class="btn btn-outline btn-sm" onclick="showToast('Vote counts reset to 0!','warning')">🔄 Reset Votes</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:28px;font-size:.84rem;color:var(--text-muted)">
+            <span>📊 <strong style="color:var(--text)">Total Votes Cast:</strong> 247</span>
+            <span>👥 <strong style="color:var(--text)">Contestants:</strong> 6</span>
+            <span>🏆 <strong style="color:var(--text)">Leading:</strong> Contestant #003</span>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-header">
+            <h3>Add New Contestant</h3>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Contestant added!','success')">+ Add</button>
+          </div>
+          <div class="form-row-3">
+            <div class="form-group"><label>Full Name *</label><input type="text" placeholder="Contestant name"></div>
+            <div class="form-group"><label>Contestant Number *</label><input type="text" placeholder="e.g. 001"></div>
+            <div class="form-group"><label>Category *</label><select><option>Miss CESI</option><option>Teen CESI</option><option>Mini CESI</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>State / LGA</label><input type="text" placeholder="State of origin"></div>
+            <div class="form-group"><label>Photo (assets/pageant/filename.jpg)</label><input type="text" placeholder="assets/pageant/contestant1.jpg"></div>
+          </div>
+        </div>
+
+        <div class="card-title">Contestants &amp; Vote Standings</div>
+        <div class="contestant-grid">
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #001</div>
+            <div class="contestant-name">Amaka Okonkwo</div><!-- EDIT -->
+            <div class="contestant-cat">Miss CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:62%;background:var(--gold)"></div></div>
+            </div>
+            <div class="vote-count">62 votes</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #002</div>
+            <div class="contestant-name">Chidinma Eze</div><!-- EDIT -->
+            <div class="contestant-cat">Miss CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:48%;background:var(--blue-mid)"></div></div>
+            </div>
+            <div class="vote-count">48 votes</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #003</div>
+            <div class="contestant-name">Fatima Abdullahi</div><!-- EDIT -->
+            <div class="contestant-cat">Miss CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:88%;background:var(--success)"></div></div>
+            </div>
+            <div class="vote-count">88 votes 🏆</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #004</div>
+            <div class="contestant-name">Ngozi Obi</div><!-- EDIT -->
+            <div class="contestant-cat">Teen CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:29%;background:var(--gold)"></div></div>
+            </div>
+            <div class="vote-count">29 votes</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #005</div>
+            <div class="contestant-name">Blessing Nwosu</div><!-- EDIT -->
+            <div class="contestant-cat">Teen CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:14%;background:var(--blue-mid)"></div></div>
+            </div>
+            <div class="vote-count">14 votes</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+          <div class="contestant-card">
+            <div class="contestant-avatar">👸</div>
+            <div class="contestant-num">CONTESTANT #006</div>
+            <div class="contestant-name">Adaeze Chukwu</div><!-- EDIT -->
+            <div class="contestant-cat">Mini CESI</div>
+            <div class="vote-bar-wrap">
+              <div class="progress-bar"><div class="progress-fill" style="width:6%;background:var(--gold)"></div></div>
+            </div>
+            <div class="vote-count">6 votes</div>
+            <div style="display:flex;gap:7px;justify-content:center;margin-top:12px">
+              <button class="btn btn-outline btn-xs">Edit</button>
+              <button class="btn btn-danger btn-xs">Remove</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ CESI MODELS ════════ -->
+      <div class="panel" id="panel-models">
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card gold"><div class="stat-icon">👗</div><div class="stat-num">23</div><div class="stat-label">Active Trainees</div></div>
+          <div class="stat-card green"><div class="stat-icon">✅</div><div class="stat-num">15</div><div class="stat-label">Graduates</div></div>
+          <div class="stat-card blue"><div class="stat-icon">📅</div><div class="stat-num">Aug 2025</div><div class="stat-label">Next Session</div></div>
+        </div>
+        <div class="tab-row">
+          <button class="tab active" onclick="switchTab(this,'mod-list')">Trainees</button>
+          <button class="tab" onclick="switchTab(this,'mod-sessions')">Sessions</button>
+          <button class="tab" onclick="switchTab(this,'mod-add')">Add Trainee</button>
+        </div>
+        <div id="mod-list">
+          <div class="card" style="padding:0;overflow:hidden">
+            <table class="data-table">
+              <thead><tr><th>Name</th><th>Age</th><th>State</th><th>Applied</th><th>Stage</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">J</div><strong>Jane Doe</strong></div></td><td>22</td><td>Abuja</td><td>Jun 5</td><td>Portfolio</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline btn-xs">View</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div><strong>Amaka Nwosu</strong></div></td><td>19</td><td>Enugu</td><td>Jun 3</td><td>Runway Training</td><td><span class="pill pill-green">Active</span></td><td><button class="btn btn-outline btn-xs">View</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">C</div><strong>Chioma Eze</strong></div></td><td>24</td><td>Lagos</td><td>Jun 1</td><td>Audition</td><td><span class="pill pill-yellow">Pending</span></td><td><button class="btn btn-outline btn-xs">View</button></td></tr>
+                <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">F</div><strong>Fatima B.</strong></div></td><td>20</td><td>Kano</td><td>May 28</td><td>Graduated</td><td><span class="pill pill-blue">Graduated</span></td><td><button class="btn btn-outline btn-xs">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="mod-sessions" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Training Sessions</h3><button class="btn btn-primary btn-sm">+ Add Session</button></div>
+            <table class="data-table">
+              <thead><tr><th>Session</th><th>Topic</th><th>Date</th><th>Trainer</th><th>Trainees</th></tr></thead>
+              <tbody>
+                <tr><td>Session 1</td><td>Runway Basics &amp; Posture</td><td>Jul 5, 2025</td><td>Lead Coach</td><td>23</td></tr>
+                <tr><td>Session 2</td><td>Stage Presence</td><td>Jul 12, 2025</td><td>Lead Coach</td><td>22</td></tr>
+                <tr><td>Session 3</td><td>Portfolio Shoot</td><td>Jul 19, 2025</td><td>Photographer</td><td>20</td></tr>
+                <tr><td>Session 4</td><td>Brand &amp; Etiquette</td><td>Jul 26, 2025</td><td>Brand Coach</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="mod-add" style="display:none">
+          <div class="card">
+            <div class="card-header"><h3>Add New Trainee</h3></div>
+            <div class="form-row">
+              <div class="form-group"><label>First Name *</label><input type="text" placeholder="First name"></div>
+              <div class="form-group"><label>Last Name *</label><input type="text" placeholder="Last name"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Email *</label><input type="email" placeholder="email@example.com"></div>
+              <div class="form-group"><label>Phone *</label><input type="tel" placeholder="+234..."></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Age *</label><input type="number" min="14" max="30" placeholder="Age"></div>
+              <div class="form-group"><label>State *</label><input type="text" placeholder="State of origin"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Height (cm)</label><input type="number" placeholder="Height in cm"></div>
+              <div class="form-group"><label>Stage</label><select><option>Audition</option><option>Runway Training</option><option>Portfolio</option><option>Brand &amp; Etiquette</option><option>Graduated</option></select></div>
+            </div>
+            <div class="form-group"><label>Notes</label><textarea placeholder="Any relevant notes..."></textarea></div>
+            <div class="form-actions">
+              <button class="btn btn-primary" onclick="showToast('Trainee added successfully!','success')">➕ Add Trainee</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ════════ TEAM ════════ -->
+      <div class="panel" id="panel-team">
+        <div class="toolbar">
+          <div></div>
+          <button class="btn btn-primary" onclick="document.getElementById('teamModal').classList.add('open')">+ Add Member</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Photo</th><th>Name</th><th>Role / Title</th><th>Email</th><th>Visible</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><div class="av-sm">A</div></td>
+                <td><strong>Amaidonah E.</strong></td><!-- EDIT -->
+                <td>Founder &amp; CEO</td>
+                <td>ceo@amaidonah.org</td>
+                <td><span class="pill pill-green">Visible</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td>
+              </tr>
+              <tr>
+                <td><div class="av-sm">P</div></td>
+                <td><strong>Programs Director</strong></td><!-- EDIT -->
+                <td>Programs Lead</td>
+                <td>programs@amaidonah.org</td>
+                <td><span class="pill pill-green">Visible</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td>
+              </tr>
+              <tr>
+                <td><div class="av-sm">T</div></td>
+                <td><strong>Tech Coordinator</strong></td><!-- EDIT -->
+                <td>Technology &amp; Innovation</td>
+                <td>tech@amaidonah.org</td>
+                <td><span class="pill pill-green">Visible</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td>
+              </tr>
+              <tr>
+                <td><div class="av-sm">P</div></td>
+                <td><strong>Pageant Director</strong></td><!-- EDIT -->
+                <td>CESI Pageant Head</td>
+                <td>pageant@amaidonah.org</td>
+                <td><span class="pill pill-green">Visible</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-outline btn-xs">Edit</button><button class="btn btn-danger btn-xs">Remove</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ REGISTRATIONS ════════ -->
+      <div class="panel" id="panel-registrations">
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px">
+          <div class="stat-card blue"><div class="stat-icon">📋</div><div class="stat-num">47</div><div class="stat-label">Total Registrations</div></div>
+          <div class="stat-card gold"><div class="stat-icon">👗</div><div class="stat-num">23</div><div class="stat-label">CESI Models</div></div>
+          <div class="stat-card green"><div class="stat-icon">💻</div><div class="stat-num">24</div><div class="stat-label">Other Programs</div></div>
+        </div>
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <div class="search-bar" style="max-width:280px"><span>🔍</span><input type="text" placeholder="Search registrations..."></div>
+            <select style="padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:.84rem;background:var(--white)">
+              <option>All Programs</option><option>CESI Models</option><option>CESI Pageant</option><option>Tech Workshop</option>
+            </select>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Exporting to CSV...','info')">⬇️ Export CSV</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Program</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">J</div><strong>Jane Doe</strong></div></td><td>CESI Models</td><td>+234 810...</td><td>Jun 5, 2025</td><td><span class="pill pill-green">Approved</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-outline btn-xs">View</button><button class="btn btn-success btn-xs">✓</button><button class="btn btn-danger btn-xs">✗</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">A</div><strong>Amaka N.</strong></div></td><td>CESI Pageant</td><td>+234 802...</td><td>Jun 3, 2025</td><td><span class="pill pill-yellow">Pending</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-outline btn-xs">View</button><button class="btn btn-success btn-xs">✓</button><button class="btn btn-danger btn-xs">✗</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">C</div><strong>Chioma E.</strong></div></td><td>CESI Models</td><td>+234 805...</td><td>Jun 1, 2025</td><td><span class="pill pill-yellow">Pending</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-outline btn-xs">View</button><button class="btn btn-success btn-xs">✓</button><button class="btn btn-danger btn-xs">✗</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">F</div><strong>Fatima B.</strong></div></td><td>Tech Workshop</td><td>+234 703...</td><td>May 28, 2025</td><td><span class="pill pill-green">Approved</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-outline btn-xs">View</button><button class="btn btn-success btn-xs">✓</button><button class="btn btn-danger btn-xs">✗</button></div></td></tr>
+              <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av-sm">N</div><strong>Ngozi A.</strong></div></td><td>CESI Models</td><td>+234 816...</td><td>May 25, 2025</td><td><span class="pill pill-red">Declined</span></td><td><div style="display:flex;gap:5px"><button class="btn btn-outline btn-xs">View</button><button class="btn btn-success btn-xs">✓</button><button class="btn btn-danger btn-xs">✗</button></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ SPONSORS ════════ -->
+      <div class="panel" id="panel-sponsors">
+        <div class="toolbar"><div></div><button class="btn btn-primary">+ Add Sponsor</button></div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead><tr><th>Organization</th><th>Contact</th><th>Tier</th><th>Program</th><th>Amount</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Sample Sponsor A</strong></td><td>contact@sponsora.com</td><td><span class="pill pill-gold">Gold</span></td><td>CESI Pageant Ed.3</td><td>₦300,000</td><td><span class="pill pill-green">Confirmed</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td><strong>Sample Sponsor B</strong></td><td>info@sponsorb.com</td><td><span class="pill" style="background:#f1f1f1;color:#555">Silver</span></td><td>CESI Pageant Ed.3</td><td>₦150,000</td><td><span class="pill pill-green">Confirmed</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+              <tr><td><strong>Tech Brand X</strong></td><td>partner@techbrandx.com</td><td><span class="pill pill-gold">Gold</span></td><td>CESI Pageant Ed.4</td><td>₦300,000</td><td><span class="pill pill-yellow">Interested</span></td><td><button class="btn btn-outline btn-xs">Edit</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ MESSAGES ════════ -->
+      <div class="panel" id="panel-messages">
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:14px 20px;background:var(--off-white);border-bottom:1px solid var(--border);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);display:flex;justify-content:space-between">
+            <span>Inbox</span>
+            <span class="pill pill-red">5 unread</span>
+          </div>
+          <table class="data-table">
+            <thead><tr><th>Sender</th><th>Subject</th><th>Purpose</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+              <tr style="font-weight:600">
+                <td>Tech Brand X</td>
+                <td>Gold Sponsorship Inquiry</td>
+                <td>Partnership</td>
+                <td>Jun 6, 2025</td>
+                <td><span class="pill pill-red">Unread</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-blue btn-xs">Open</button><button class="btn btn-outline btn-xs">Reply</button></div></td>
+              </tr>
+              <tr style="font-weight:600">
+                <td>Adaeze O.</td>
+                <td>CESI Models Registration Info</td>
+                <td>Models</td>
+                <td>Jun 5, 2025</td>
+                <td><span class="pill pill-red">Unread</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-blue btn-xs">Open</button><button class="btn btn-outline btn-xs">Reply</button></div></td>
+              </tr>
+              <tr>
+                <td>School A, Abuja</td>
+                <td>Tech Workshop for Students</td>
+                <td>Event Booking</td>
+                <td>Jun 4, 2025</td>
+                <td><span class="pill pill-green">Read</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-blue btn-xs">Open</button><button class="btn btn-outline btn-xs">Reply</button></div></td>
+              </tr>
+              <tr>
+                <td>James K.</td>
+                <td>General Inquiry</td>
+                <td>Membership</td>
+                <td>Jun 3, 2025</td>
+                <td><span class="pill pill-green">Read</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-blue btn-xs">Open</button><button class="btn btn-outline btn-xs">Reply</button></div></td>
+              </tr>
+              <tr style="font-weight:600">
+                <td>Fashion Brand Y</td>
+                <td>Runway Partnership Proposal</td>
+                <td>Partnership</td>
+                <td>Jun 2, 2025</td>
+                <td><span class="pill pill-red">Unread</span></td>
+                <td><div style="display:flex;gap:6px"><button class="btn btn-blue btn-xs">Open</button><button class="btn btn-outline btn-xs">Reply</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- ════════ SETTINGS ════════ -->
+      <div class="panel" id="panel-settings">
+        <div class="grid-2">
+          <!-- Site Settings -->
+          <div class="card">
+            <div class="card-header"><h3>Website Settings</h3></div>
+            <div class="settings-section">
+              <h3>General</h3>
+              <div class="form-group"><label>Site Title</label><input type="text" value="Amaidonah Universal Solutions Ltd"></div>
+              <div class="form-group"><label>Tagline / Slogan</label><input type="text" value="Innovating Solutions, Empowering People"></div>
+              <div class="form-group"><label>Contact Email</label><input type="email" value="info@amaidonah.org"></div>
+              <div class="form-group"><label>Phone Number</label><input type="tel" value="+234 XXX XXX XXXX"></div>
+              <div class="form-group"><label>WhatsApp Number (digits only)</label><input type="text" value="234XXXXXXXXXX"></div>
+              <div class="form-group"><label>Address</label><textarea style="min-height:60px">Abuja, Federal Capital Territory, Nigeria</textarea></div>
+            </div>
+            <div class="settings-section">
+              <h3>Social Media</h3>
+              <div class="form-group"><label>Instagram URL</label><input type="text" placeholder="https://instagram.com/yourpage"></div>
+              <div class="form-group"><label>Facebook URL</label><input type="text" placeholder="https://facebook.com/yourpage"></div>
+              <div class="form-group"><label>Twitter/X URL</label><input type="text" placeholder="https://twitter.com/yourpage"></div>
+              <div class="form-group"><label>YouTube URL</label><input type="text" placeholder="https://youtube.com/@yourpage"></div>
+              <div class="form-group"><label>TikTok URL</label><input type="text" placeholder="https://tiktok.com/@yourpage"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" onclick="showToast('Settings saved successfully!','success')">💾 Save Settings</button>
+            </div>
+          </div>
+
+          <!-- Account & Toggle Settings -->
+          <div>
+            <div class="card" style="margin-bottom:20px">
+              <div class="card-header"><h3>Admin Account</h3></div>
+              <div class="form-group"><label>Admin Username</label><input type="text" value="admin"></div>
+              <div class="form-group"><label>Current Password</label><input type="password" placeholder="Enter current password"></div>
+              <div class="form-group"><label>New Password</label><input type="password" placeholder="New password"></div>
+              <div class="form-group"><label>Confirm New Password</label><input type="password" placeholder="Confirm new password"></div>
+              <div class="form-hint">Password must be at least 8 characters.</div>
+              <div class="form-actions" style="margin-top:14px">
+                <button class="btn btn-blue" onclick="showToast('Password updated!','success')">🔒 Update Password</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h3>Feature Toggles</h3></div>
+              <div class="setting-row">
+                <div class="setting-info"><strong>Online Voting</strong><span>Enable/disable public voting for pageant contestants</span></div>
+                <label class="toggle" onclick="toggleTrack(this)"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info"><strong>Model Registrations</strong><span>Open or close model application form</span></div>
+                <label class="toggle" onclick="toggleTrack(this)"><div class="toggle-track on"><div class="toggle-thumb"></div></div></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info"><strong>Pageant Registration</strong><span>Open or close pageant contestant form</span></div>
+                <label class="toggle" onclick="toggleTrack(this)"><div class="toggle-track"><div class="toggle-thumb"></div></div></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info"><strong>Contact Form</strong><span>Allow visitors to send messages via contact form</span></div>
+                <label class="toggle" onclick="toggleTrack(this)"><div class="toggle-track on"><div class="toggle-thumb"></div></div></label>
+              </div>
+              <div class="setting-row">
+                <div class="setting-info"><strong>WhatsApp Button</strong><span>Show floating WhatsApp chat button on website</span></div>
+                <label class="toggle" onclick="toggleTrack(this)"><div class="toggle-track on"><div class="toggle-thumb"></div></div></label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div><!-- /content-area -->
+  </div><!-- /main-area -->
+</div><!-- /appShell -->
+
+
+<!-- ═══════ ADD TEAM MEMBER MODAL ═══════ -->
+<div class="modal-overlay" id="teamModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('teamModal').classList.remove('open')">✕</button>
+    <h2 class="modal-title">Add Team Member</h2>
+    <p class="modal-sub">Add a new leadership or team member to the website.</p>
+    <div class="form-row">
+      <div class="form-group"><label>First Name *</label><input type="text" placeholder="First name"></div>
+      <div class="form-group"><label>Last Name *</label><input type="text" placeholder="Last name"></div>
+    </div>
+    <div class="form-group"><label>Role / Title *</label><input type="text" placeholder="e.g. Programs Director"></div>
+    <div class="form-group"><label>Email</label><input type="email" placeholder="member@amaidonah.org"></div>
+    <div class="form-group"><label>Photo (upload to assets/team/ first)</label><input type="text" placeholder="assets/team/name.jpg"></div>
+    <div class="form-group"><label>Short Bio</label><textarea placeholder="Brief description of this team member..."></textarea></div>
+    <div class="form-actions">
+      <button class="btn btn-primary" onclick="showToast('Team member added!','success');document.getElementById('teamModal').classList.remove('open')">➕ Add Member</button>
+      <button class="btn btn-outline" onclick="document.getElementById('teamModal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ════════════════════════════════════
+   LOGIN
+════════════════════════════════════ */
+// Demo credentials - replace with real auth backend
+const CREDENTIALS = { username: 'admin', password: 'aus2025' };
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  if (u === CREDENTIALS.username && p === CREDENTIALS.password) {
+    err.classList.remove('show');
+    document.getElementById('loginScreen').style.opacity = '0';
+    document.getElementById('loginScreen').style.transition = 'opacity .4s';
+    setTimeout(() => {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('appShell').classList.add('visible');
+      initDashboard();
+    }, 400);
+  } else {
+    err.classList.add('show');
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+
+function doLogout() {
+  if (!confirm('Sign out of Admin Dashboard?')) return;
+  document.getElementById('appShell').classList.remove('visible');
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginScreen').style.opacity = '1';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+// Enter key on login
+document.getElementById('loginUser').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginPass').focus();
+});
+
+/* ════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════ */
+let sidebarCollapsed = false;
+
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  const sb = document.getElementById('sidebar');
+  const btn = document.getElementById('sidebarToggle');
+  sb.classList.toggle('collapsed', sidebarCollapsed);
+  btn.textContent = sidebarCollapsed ? '▶' : '◀';
+}
+
+function openMobileSidebar() {
+  document.getElementById('sidebar').classList.add('mobile-open');
+  document.getElementById('mobileOverlay').classList.add('show');
+}
+function closeMobileSidebar() {
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobileOverlay').classList.remove('show');
+}
+
+/* ════════════════════════════════════
+   PANEL NAVIGATION
+════════════════════════════════════ */
+const panelNames = {
+  dashboard: 'Dashboard',
+  blog: 'Blog & News',
+  gallery: 'Gallery',
+  events: 'Events',
+  services: 'Services',
+  pageant: 'CESI Pageant',
+  contestants: 'Contestants & Voting',
+  models: 'CESI Models',
+  team: 'Leadership Team',
+  registrations: 'Registrations',
+  sponsors: 'Sponsors',
+  messages: 'Messages',
+  settings: 'Settings'
+};
+
+function showPanel(name, navEl) {
+  // Hide all panels
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  // Show selected
+  const panel = document.getElementById('panel-' + name);
+  if (panel) panel.classList.add('active');
+  if (navEl) navEl.classList.add('active');
+  // Update topbar
+  const title = panelNames[name] || name;
+  document.getElementById('topbarTitle').textContent = title;
+  document.getElementById('topbarCrumb').textContent = title;
+  // Close mobile sidebar
+  closeMobileSidebar();
+}
+
+/* ════════════════════════════════════
+   TAB SWITCHER
+════════════════════════════════════ */
+function switchTab(btn, contentId) {
+  // Find sibling tabs
+  const tabRow = btn.closest('.tab-row') || btn.parentElement;
+  tabRow.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  // Hide all tab contents in same panel
+  const panel = btn.closest('.panel');
+  if (panel) {
+    panel.querySelectorAll('[id]').forEach(el => {
+      if (el.id !== 'panel-' + el.id.replace('panel-','')) el.style.display = 'none';
+    });
+  }
+  const content = document.getElementById(contentId);
+  if (content) content.style.display = 'block';
+}
+
+/* ════════════════════════════════════
+   TOGGLE SWITCH
+════════════════════════════════════ */
+function toggleTrack(label) {
+  const track = label.querySelector('.toggle-track');
+  if (track) track.classList.toggle('on');
+}
+
+function toggleVoting(label) {
+  const track = document.getElementById('votingTrack');
+  const lbl = document.getElementById('votingLabel');
+  track.classList.toggle('on');
+  const isOn = track.classList.contains('on');
+  lbl.textContent = isOn ? 'Voting: ON' : 'Voting: OFF';
+  showToast(isOn ? 'Online voting is now ENABLED!🗳️' : 'Online voting has been DISABLED.', isOn ? 'success' : 'warning');
+}
+
+/* ════════════════════════════════════
+   TOAST
+════════════════════════════════════ */
+let toastTimer;
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  t.innerHTML = `<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  t.className = 'toast ' + type + ' show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ════════════════════════════════════
+   MINI CHART (Dashboard)
+════════════════════════════════════ */
+function initDashboard() {
+  const days = ['M','T','W','T','F','S','S'];
+  const vals = [4,7,3,9,6,11,8];
+  const max = Math.max(...vals);
+  const chart = document.getElementById('miniChart');
+  const labels = document.getElementById('chartLabels');
+  if (!chart) return;
+  chart.innerHTML = '';
+  labels.innerHTML = '';
+  vals.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'mini-bar' + (i === 5 ? ' gold' : '');
+    bar.style.height = (v / max * 100) + '%';
+    bar.title = `${days[i]}: ${v} registrations`;
+    chart.appendChild(bar);
+    const lbl = document.createElement('div');
+    lbl.className = 'chart-label';
+    lbl.textContent = days[i];
+    labels.appendChild(lbl);
+  });
+  // Date
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+  document.getElementById('adminDate') && (document.getElementById('adminDate').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}));
+}
+
+// Update date on load
+document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+</script>
+</body>
+</html>
